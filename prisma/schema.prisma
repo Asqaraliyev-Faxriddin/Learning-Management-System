@@ -328,3 +328,4 @@ model QuestionAnswer {
 
   @@map("questionsanswer")
 }
+
