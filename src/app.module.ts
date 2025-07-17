@@ -21,6 +21,8 @@ import { QuestionModule } from './modules/question/question.module';
 import { QuestionAnswerModule } from './modules/question-answer/question-answer.module';
 import { SeaderModule } from './core/seader/seader.module';
 import { RedisModule } from './core/redis/redis.module';
+import { ProfilesModule } from './modules/profiles/profiles.module';
+import { VerificationModule } from './modules/verification/verification.module';
 
 @Module({
   imports: [
@@ -31,7 +33,7 @@ import { RedisModule } from './core/redis/redis.module';
     RatingModule, LastActivityModule, LessonBolimModule, LessonModule,
     LessonViewModule, LessonFileModule, HomeworkModule,
     HomeworkSubmissionModule, ExamModule, ExamResultModule, QuestionModule,
-    QuestionAnswerModule, SeaderModule,RedisModule
+    QuestionAnswerModule, SeaderModule,RedisModule, ProfilesModule, VerificationModule
   ],
 })
 export class AppModule { }

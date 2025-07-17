@@ -17,5 +17,8 @@ export class RegisterDto {
     @Length(5,50)
     fullname:string
 
+    @IsNotEmpty()
+    @IsString()
+    otp:string
 
 }

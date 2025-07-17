@@ -1,6 +1,6 @@
 import {JwtSignOptions } from "@nestjs/jwt";
-import dotenv from "dotenv"
-dotenv.config()
+import dotenv from "dotenv/config"
+
 
 export const JwtAccesToken:JwtSignOptions = {
     secret:process.env.Jwt_Acc,

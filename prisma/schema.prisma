@@ -118,18 +118,19 @@ model Course {
 }
 
 model AssignedCourse {
+  id String @id @default(uuid())
   userId    String 
   courseId  String
   createdAt DateTime @default(now())
 
   user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade) 
-  @@id([userId, courseId])
 
 @@map("assigncourses")
 }
 
 model PurchasedCourse {
+  id String @id @default(uuid())
   courseId    String  
   userId      String
   amount      Decimal?
@@ -139,7 +140,6 @@ model PurchasedCourse {
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
   user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([courseId, userId])
 
   @@map("purchasedcourses")
 }
@@ -169,7 +169,7 @@ model LastActivity {
 
   user       Users        @relation(fields: [userId], references: [id], onDelete: Cascade)
   course     Course?      @relation(fields: [courseId], references: [id])
-  group      LessonBolim? @relation(fields: [groupId], references: [id])
+  Bolim      LessonBolim? @relation(fields: [groupId], references: [id])
   lesson     Lesson?      @relation(fields: [lessonId], references: [id])
 
   @@map("lastactivity")
@@ -199,7 +199,7 @@ model Lesson {
   updatedAt      DateTime?
   createdAt      DateTime         @default(now())
 
-  group          LessonBolim      @relation(fields: [groupId], references: [id])
+  Bolim          LessonBolim      @relation(fields: [groupId], references: [id])
   course         Course           @relation(fields: [courseId], references: [id])
   lessonFiles    LessonFile[]
   homework       Homework?
@@ -210,6 +210,7 @@ model Lesson {
 }
 
 model LessonView {
+  id String @id @default(uuid())
   lessonId String
   userId   String
   view     Boolean
@@ -217,7 +218,6 @@ model LessonView {
   lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   user     Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([lessonId, userId])
 
   @@map("lessonview")
 }
@@ -273,24 +273,24 @@ model Exam {
   variantC      String
   variantD      String
   answer        ExamAnswer
-  lessonGroupId String
+  lessonBolimId String
   createdAt     DateTime   @default(now())
 
-  group LessonBolim @relation(fields: [lessonGroupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Bolim LessonBolim @relation(fields: [lessonBolimId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("exams")
 }
 
 model ExamResult {
   id            String     @id @default(uuid())
-  lessonGroupId String
+  lessonBolimId String
   userId        String
   passed        Boolean
   corrects      Int
   wrongs        Int
   createdAt     DateTime   @default(now())
 
-  group LessonBolim @relation(fields: [lessonGroupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Bolim LessonBolim @relation(fields: [lessonBolimId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user  Users       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("examresults")

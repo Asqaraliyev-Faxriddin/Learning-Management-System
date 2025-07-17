@@ -9,7 +9,7 @@ export class Reset_Password{
 
     @IsNotEmpty()
     @IsNumber()
-    code:number
+    otp:string
 
     @IsNotEmpty()
     @IsString()

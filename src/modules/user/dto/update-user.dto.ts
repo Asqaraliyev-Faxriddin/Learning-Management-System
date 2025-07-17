@@ -1,4 +1,14 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateUserDto } from './create-user.dto';
+import { IsNotEmpty, IsString } from "class-validator"
 
-export class UpdateUserDto extends PartialType(CreateUserDto) {}
+export class ProfileUserUpdateDto{
+    
+    @IsNotEmpty()
+    @IsString()
+    fullname:string
+
+    @IsNotEmpty()
+    @IsString()
+    image:string
+}
+
+export class UpdateUserDto {}
