@@ -4,7 +4,7 @@ export function getMessages(type:EverificationTypes,otp:string){
 
     switch(type){
         case EverificationTypes.REGISTER:
-            return `Najot platformasidan ro'yxatdan o'tish uchun code :${otp}\n Bu code ni xech kimga bermang!`
+            return `Bu Eskiz dan test`;
 
             case EverificationTypes.RESET_PASSWORD:
             return `Najot platformasidan passwordni almashtirish uchun code :${otp}\n Bu code ni xech kimga bermang!`

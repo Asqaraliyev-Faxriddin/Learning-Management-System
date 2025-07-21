@@ -1,6 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserRole } from '@prisma/client';
+import * as bcrypt from "bcrypt"
 
 @Injectable()
 export class SeaderService implements OnModuleInit {
@@ -16,19 +17,20 @@ export class SeaderService implements OnModuleInit {
     }
 
     async CreateSuperadmin() {
+      let password = await bcrypt.hash("12345678",10)
         await this.prisma.users.createMany({
           data: [
             {
               fullName: 'Ali Valiyev',
-              password: '12345678',
-              phone: '9000000000',
+              password,
+              phone: '+998900000000',
               role: UserRole.STUDENT,
               image: 'default.png',
             },
             {
               fullName: 'Faxriddin Asqaraliyev',
-              password: '12345678',
-              phone: '903641207',
+              password,
+              phone: '+998903641207',
               role: UserRole.ADMIN,
               image: 'default.png',
             },
@@ -36,7 +38,7 @@ export class SeaderService implements OnModuleInit {
           ],
           skipDuplicates: true,
         });
-      
+       
         this.loger.log("Admin va User yaratildi.")
       }
 }

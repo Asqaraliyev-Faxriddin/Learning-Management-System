@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { PrismaModule } from './core/prisma/prisma.module';
 import { AuthModule } from './modules/Auth/auth.module';
 import { UserModule } from './modules/user/user.module';
-import { MentorProfileModule } from './modules/mentor-profile/mentor-profile.module';
 import { CourseCategoryModule } from './modules/course-category/course-category.module';
 import { CourseModule } from './modules/course/course.module';
 import { AssignedCourseModule } from './modules/assigned-course/assigned-course.module';
@@ -23,17 +22,31 @@ import { SeaderModule } from './core/seader/seader.module';
 import { RedisModule } from './core/redis/redis.module';
 import { ProfilesModule } from './modules/profiles/profiles.module';
 import { VerificationModule } from './modules/verification/verification.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
-    PrismaModule, AuthModule,
-    UserModule, MentorProfileModule,
-    CourseCategoryModule, CourseModule,
-    AssignedCourseModule, PurchasedCourseModule,
-    RatingModule, LastActivityModule, LessonBolimModule, LessonModule,
-    LessonViewModule, LessonFileModule, HomeworkModule,
+
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'uploads/lesson'), 
+      serveRoot: '/video/url', 
+    },
+    {
+      rootPath: join(process.cwd(), 'uploads/banner'), 
+      serveRoot: '/banner/url', 
+    }
+  ),
+
+
+    PrismaModule ,AuthModule,VerificationModule,UserModule,
+    ProfilesModule,CourseModule,CourseCategoryModule,PurchasedCourseModule,LessonModule, 
+    LessonBolimModule,LessonViewModule, LessonFileModule,AssignedCourseModule,
+    RatingModule, LastActivityModule,  HomeworkModule,
     HomeworkSubmissionModule, ExamModule, ExamResultModule, QuestionModule,
-    QuestionAnswerModule, SeaderModule,RedisModule, ProfilesModule, VerificationModule
+    QuestionAnswerModule, SeaderModule,RedisModule, 
+
+    
   ],
 })
 export class AppModule { }

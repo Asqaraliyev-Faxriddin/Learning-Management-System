@@ -1,26 +1,704 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCourseDto } from './dto/create-course.dto';
-import { UpdateCourseDto } from './dto/update-course.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from 'src/core/prisma/prisma.service';
+import { AssistantAddCourse, CourseAllDto, CourseMentorAllDto, CreateCourseDto, UpdateCourseDto } from './dto/create-course.dto';
+import { CourseLevel } from '@prisma/client';
+import *  as fs from "fs"
+import * as path from "path"
 
 @Injectable()
 export class CourseService {
-  create(createCourseDto: CreateCourseDto) {
-    return 'This action adds a new course';
+  constructor(private prisma:PrismaService){}
+  
+  async CourseAll(payload:CourseAllDto){
+
+    let {offset=1,limit=10,search,level,category_id,mentor_id,price_min,price_max} = payload
+  
+    if(mentor_id){
+      let oldmentor = await this.prisma.users.findFirst({
+        where:{id:mentor_id}
+      })
+
+      if(!oldmentor) throw new NotFoundException("Mentor not found")
+    }
+
+    if(category_id){
+      let oldmentor = await this.prisma.courseCategory.findFirst({
+        where:{id:category_id}
+      })
+
+      if(!oldmentor) throw new NotFoundException("Category not found")
+    }
+
+
+    let filter:any = []
+
+    filter.push({
+      Cursecategory: {
+        is: {
+          name: {
+            contains: search,
+            mode: 'insensitive'
+          }
+        }
+      }
+    })
+    if(level){
+      filter.push({
+        level:level
+      })
+    }
+
+    if(category_id){
+      filter.push({
+        category_id:category_id
+      })
+    }
+
+
+    if(mentor_id){
+      filter.push({
+        mentor_id: mentor_id
+      })
+    }
+
+    
+    if (price_min && price_max) {
+      filter.push({
+        price: {
+          gte: Number(price_min),
+          lte: Number(price_max)
+        }
+      });
+    } else if (price_min) {
+      filter.push({
+        price: {
+          gte: Number(price_min)
+        }
+      });
+    } else if (price_max) {
+      filter.push({
+        price: {
+          lte: Number(price_max)
+        }
+      });
+    }
+    
+    let wherefilter:any = {published:true  }
+    if(filter.length){
+      wherefilter.OR = filter
+    }
+
+    let data = await this.prisma.course.findMany({
+      where: wherefilter,
+      include: {
+        Cursecategory: true,
+        mentor: true
+      },
+        
+  
+      take: limit,
+      skip: (offset - 1) * limit
+    })
+
+    return { succase:true,
+      message:"Succase  course all",data}
+  
   }
 
-  findAll() {
-    return `This action returns all course`;
+  
+
+  
+  async CourseOne(id:string){
+
+    let data = await this.prisma.course.findFirst({
+      where:{
+        id
+      }
+  })
+    if(!data) throw new NotFoundException("Course not found")
+      return { succase:true,
+        message:"Succase course",data}
+  
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} course`;
+
+  
+
+  async CoursefullOne(id:string){
+
+    let data = await this.prisma.course.findFirst({
+      where:{
+        id
+      },
+      include:{
+        questions:true,
+        assignedCourses:true,
+        Cursecategory:true,
+        lessonBolimlar:true,
+        lastActivities:true,
+        lessons:true,
+        purchasedCourses:true,
+        ratings:true,
+        mentor:true
+      }
+    })
+  
+    if(!data) throw new NotFoundException("Course not found")
+    return { succase:true,
+      message:"Succase course",data}
+  
   }
 
-  update(id: number, updateCourseDto: UpdateCourseDto) {
-    return `This action updates a #${id} course`;
+  
+
+  async CoursefullAll(payload:CourseAllDto){
+
+    let {offset=1,limit=10,search,level,category_id,mentor_id,price_min,price_max} = payload
+  
+    if(mentor_id){
+      let oldmentor = await this.prisma.users.findFirst({
+        where:{id:mentor_id}
+      })
+
+      if(!oldmentor) throw new NotFoundException("Mentor not found")
+    }
+
+    if(category_id){
+      let oldmentor = await this.prisma.courseCategory.findFirst({
+        where:{id:category_id}
+      })
+
+      if(!oldmentor) throw new NotFoundException("Category not found")
+    }
+
+
+    let filter:any = []
+
+    if(search){
+      filter.push({
+        Cursecategory:{
+          name:search
+        }
+      })
+    }
+
+    if(level){
+      filter.push({
+        level:level
+      })
+    }
+
+    if(category_id){
+      filter.push({
+        category_id:category_id
+      })
+    }
+
+
+    if(mentor_id){
+      filter.push({
+        mentor_id: mentor_id
+      })
+    }
+
+    if (price_min && price_max) {
+      filter.push({
+        price: {
+          gte: Number(price_min),
+          lte: Number(price_max)
+        }
+      });
+    } else if (price_min) {
+      filter.push({
+        price: {
+          gte: Number(price_min)
+        }
+      });
+    } else if (price_max) {
+      filter.push({
+        price: {
+          lte: Number(price_max)
+        }
+      });
+    }
+    let wherefilter:any = {}
+    if(filter.length){
+      wherefilter.OR = filter
+    }
+
+    
+    let data = await this.prisma.course.findMany({
+      where: wherefilter,
+      include:{
+        questions:true,
+        assignedCourses:true,
+        Cursecategory:true,
+        lessonBolimlar:true,
+        lastActivities:true,
+        lessons:true,
+        purchasedCourses:true,
+        ratings:true,
+        mentor:true
+      },
+      take: limit,
+      skip: (offset - 1) * limit
+    })
+
+  return{
+    succase:true,
+    message:"Succase courses all",
+     data}
+  
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} course`;
+  async myCourse(id:string){
+
+    
+    let data = await this.prisma.course.findFirst({
+      where:{
+        mentorId:id
+      },
+      include:{
+        questions:true,
+        assignedCourses:true,
+        Cursecategory:true,
+        lessonBolimlar:true,
+        lastActivities:true,
+        lessons:true,
+        purchasedCourses:true,
+        ratings:true,
+        mentor:true
+      }
+    })
+  
+    if(!data) throw new NotFoundException("Course not found")
+    return { 
+      succase:true,
+      message:"Succase my course",
+      data
+    }
   }
+
+
+  async CoursesMentorAll(id:string,payload:CourseMentorAllDto){
+
+    let {offset=1,limit=10,search,level,category_id,price_min,price_max} = payload
+  
+    let filter:any = []
+
+
+    if(search){
+      filter.push({
+        Cursecategory:{
+          name:search,
+          mode:"insensitive"
+        }
+      })
+    }
+
+    if(level){
+      filter.push({
+        level:{
+          contains:level,
+          mode:"insensitive"
+        }
+      })
+    }
+
+    if(category_id){
+      filter.push({
+        category_id:category_id
+      })
+    }
+
+
+    
+    if (price_min && price_max) {
+      filter.push({
+        price: {
+          gte: Number(price_min),
+          lte: Number(price_max)
+        }
+      });
+    } else if (price_min) {
+      filter.push({
+        price: {
+          gte: Number(price_min)
+        }
+      });
+    } else if (price_max) {
+      filter.push({
+        price: {
+          lte: Number(price_max)
+        }
+      });
+    }
+    
+
+    let wherefilter:any = {mentor_id:id}
+    if(filter.length){
+      wherefilter.OR = filter
+    }
+
+    
+    let data = await this.prisma.course.findMany({
+      where: wherefilter,
+      include:{
+        questions:true,
+        assignedCourses:true,
+        Cursecategory:true,
+        lessonBolimlar:true,
+        lastActivities:true,
+        lessons:true,
+        purchasedCourses:true,
+        ratings:true,
+        mentor:true
+      },
+      take: limit,
+      skip: (offset - 1) * limit
+    })
+
+  return{ 
+    succase:true,
+    message:"Succase mentor course", 
+    data}
+  
+    
+  }
+
+
+  async courses_assiged(id:string,payload:CourseMentorAllDto){
+
+    let {offset=1,limit=10,search,level,category_id,price_min,price_max} = payload
+  
+    let filter:any = []
+
+    if(search){
+      filter.push({
+        course:{
+        Cursecategory:{
+          name:search
+        }
+      }
+      })
+    }
+
+    if(level){
+      filter.push({
+        level:{
+          contains:level,
+          mode:"insensitive"
+        }
+      })
+    }
+
+    if(category_id){
+      filter.push({
+        category_id:category_id
+      })
+    }
+
+
+    
+    if (price_min && price_max) {
+      filter.push({
+        price: {
+          gte: Number(price_min),
+          lte: Number(price_max)
+        }
+      });
+    } else if (price_min) {
+      filter.push({
+        price: {
+          gte: Number(price_min)
+        }
+      });
+    } else if (price_max) {
+      filter.push({
+        price: {
+          lte: Number(price_max)
+        }
+      });
+    }
+    
+
+    let wherefilter:any = {mentor_id:id}
+    if(filter.length){
+      wherefilter.OR = filter
+    }
+
+    
+    let data = await this.prisma.assignedCourse.findMany({
+      where: wherefilter,
+      include:{
+        user:true,
+        course:true,
+        
+      },
+      take: limit,
+      skip: (offset - 1) * limit
+    })
+
+  return {
+    succase:true,
+    message:"Succase Assistant course",
+    data
+  }
+  
+  }
+
+
+  async foundAssistant(id:string){
+
+    let data = await this.prisma.course.findMany({
+      where:{
+        id
+      },
+      include:{
+        questions:true,
+        ratings:true,
+        purchasedCourses:true,
+        assignedCourses:true,
+        lastActivities:true,
+        lessonBolimlar:true,
+        lessons:true,
+        Cursecategory:true,
+        mentor:true
+      }
+    })
+
+    if(!data) throw new NotFoundException("Course not found")
+
+      return {
+        succase:true,
+        message:"Succase Assistant course",
+        data
+      }
+  }
+
+
+  async add_Assistant(payload:AssistantAddCourse){
+
+    let {assistant_id,course_id} = payload
+  
+    let olduser = await this.prisma.users.findFirst({
+      where:{
+        id:assistant_id
+      }
+    })
+
+    let oldcourse = await this.prisma.course.findFirst({
+      where:{
+        id:course_id
+      }
+    })
+
+
+    if(!olduser) throw new NotFoundException("Assistant not found")
+    if(!oldcourse) throw new NotFoundException("Course not found")
+
+    let data = await this.prisma.assignedCourse.create({
+      data:{
+        userId:assistant_id,
+        courseId:course_id
+      },
+      include:{
+        user:true,
+        course:true,
+        
+      }
+    })
+
+    return {
+      status:true,
+      message:"Succase Assistant add Course",
+      data
+    }
+  
+  
+  }
+
+
+  async createCourse(id:string,payload: CreateCourseDto, url: string) {
+    let banner = `http://localhost:3000//banner/url/${url}`;
+    let { name, about, price, level, categoryId } = payload;
+  
+    let oldcategory = await this.prisma.courseCategory.findUnique({
+      where: { id: payload.categoryId },
+    });
+    if (!oldcategory) throw new NotFoundException("Category not found");
+    
+    let oldmentor = await this.prisma.users.findFirst({
+      where: {
+        id,
+        OR: [
+          { role: "ADMIN" },
+          { role: "MENTOR" }
+        ]
+      }
+    });
+    if (!oldmentor) throw new NotFoundException("Mentor not found");
+  
+    let data = await this.prisma.course.create({
+      data: {
+        name,
+        about,
+        price,
+        level: CourseLevel[level],
+        cursecategoryId:categoryId,
+        banner, 
+        mentorId:id
+      },
+
+      include:{
+        questions:true,
+        ratings:true,
+        purchasedCourses:true,
+        assignedCourses:true,
+        lastActivities:true,
+        lessonBolimlar:true,
+        lessons:true,
+        Cursecategory:true,
+        mentor:true
+      }
+    });
+  
+    return {
+      status:true,
+      message:"Succase created Course",data};
+  }
+  
+
+
+
+  async CoursePublish(id:string){
+
+    let oldcourse = await this.prisma.course.findFirst({
+      where:{
+        id
+      }
+    })
+
+    if(!oldcourse) throw new NotFoundException("Course Not found")
+
+    let data =await this.prisma.course.update({
+      where:{id},data:{published:true}
+    })
+
+    return {
+      status:true,
+      message:"Succase published",data}
+    
+  }
+
+
+
+  async CourseunPublish(id:string){
+
+    let oldcourse = await this.prisma.course.findFirst({
+      where:{
+        id
+      }
+    })
+
+    if(!oldcourse) throw new NotFoundException("Course Not found")
+
+    let data =await this.prisma.course.update({
+      where:{id},data:{published:false}
+    })
+    
+    return {
+      status:true,
+      message:"Succase unpublished",data}
+  }
+
+
+
+  async CourseUpdateMentor(id:string,mentor_id:string){
+
+    let oldcourse = await this.prisma.course.findFirst({
+      where:{
+        id
+      }
+    })
+
+    if(!oldcourse) throw new NotFoundException("Course Not found")
+
+    let data =await this.prisma.course.update({
+      where:{id},data:{mentorId:mentor_id}
+    })
+
+    return {
+      status:true,
+      message:"Succase updated mentor",data}
+    
+  }
+
+
+  async Coursedelete(id:string){
+
+    let oldcourse = await this.prisma.course.findFirst({
+      where:{
+        id
+      }
+    })
+
+    if(!oldcourse) throw new NotFoundException("Course Not found")
+
+    let data =await this.prisma.course.delete({
+      where:{id},
+    })
+
+    return {
+      status:true,
+      message:"Succase deleted",
+      data:oldcourse}
+    
+  }
+
+
+  async updateMentorCourse(courseId: string, payload: UpdateCourseDto, file?: Express.Multer.File) {
+    let course = await this.prisma.course.findFirst({
+      where: { id: courseId },
+    });
+  
+    let courseCategory = await this.prisma.courseCategory.findFirst({
+      where:{
+        id:payload.cursecategoryId
+      }
+    })
+
+    if(!courseCategory) throw new NotFoundException("Category not found ")
+    if (!course) throw new NotFoundException("Course not found");
+  
+    let introVideo = course.introVideo;
+  
+    if (file) {
+
+  
+      let oldPath = path.join(process.cwd(),"uploads","", path.basename(course.introVideo!));
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+  
+      introVideo = `http://localhost:3000/banner/url/${file.filename}`;
+    }
+  
+    let updated = await this.prisma.course.update({
+      where: { id: courseId },
+      data: {
+        ...payload,
+        introVideo
+      }
+    });
+  
+    return {
+      message: "Course updated successfully",
+      
+      data: updated
+    };
+  }
+
+  
+
 }

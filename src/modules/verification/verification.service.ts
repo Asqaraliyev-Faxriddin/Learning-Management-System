@@ -6,6 +6,7 @@ import { RedisService } from 'src/core/redis/redis.service';
 import { PrismaService } from 'src/core/prisma/prisma.service';
 import { SectoMills } from 'src/core/utils/times';
 import { getMessages } from 'src/core/utils/functions';
+import { generateOtp } from 'src/core/utils/random';
 
 @Injectable()
 export class VerificationService {
@@ -121,7 +122,7 @@ export class VerificationService {
             throw new HttpException("OTP expired!",HttpStatus.BAD_REQUEST)
         }
 
-        if(otp !==JSON.parse(session).otp){
+        if(otp !==JSON.parse(session)){
             throw new HttpException("invalid OTP!",HttpStatus.BAD_REQUEST)
 
         }

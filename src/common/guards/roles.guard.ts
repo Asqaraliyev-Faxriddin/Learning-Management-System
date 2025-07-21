@@ -21,9 +21,10 @@ export class RolesGuard implements CanActivate {
     if(!user){
         throw new ForbiddenException()
     }
-
-    // @ts-ignore
-    if(roles.includes(user.role)){
+    console.log(user.role,user);
+     
+      // @ts-ignore
+     if(user.role == "ADMIN" || roles.includes(user.role )){
         return true
     }else {
         throw new ForbiddenException()

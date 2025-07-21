@@ -88,6 +88,8 @@ model CourseCategory {
   createdAt DateTime @default(now())
 
   courses   Course[]
+
+  @@map("coursecategory")
 }
 
 model Course {
@@ -99,11 +101,11 @@ model Course {
   introVideo       String?
   level            CourseLevel 
   published        Boolean          @default(false)
-  cursecategoryId       String
+  cursecategoryId  String
   mentorId         String
   updatedAt        DateTime?
   createdAt        DateTime         @default(now())
-  Cursecategory         CourseCategory   @relation(fields: [cursecategoryId], references: [id], onDelete: Cascade)
+  Cursecategory     CourseCategory   @relation(fields: [cursecategoryId], references: [id], onDelete: Cascade)
   mentor           Users            @relation("MentorCourses", fields: [mentorId], references: [id], onDelete: Cascade)
   assignedCourses  AssignedCourse[]
   purchasedCourses PurchasedCourse[]
@@ -194,12 +196,12 @@ model Lesson {
   name           String
   about          String
   video          String
-  groupId        String
   courseId       String
+  bolimId        String
   updatedAt      DateTime?
   createdAt      DateTime         @default(now())
 
-  Bolim          LessonBolim      @relation(fields: [groupId], references: [id])
+  Bolim          LessonBolim      @relation(fields: [bolimId], references: [id])
   course         Course           @relation(fields: [courseId], references: [id])
   lessonFiles    LessonFile[]
   homework       Homework?
