@@ -2,15 +2,13 @@ import { EverificationTypes } from "src/common/types/verification";
 
 export function getMessages(type:EverificationTypes,otp:string){
 
-    switch(type){
+    switch (type) {
         case EverificationTypes.REGISTER:
-            return `Bu Eskiz dan test`;
-
-            case EverificationTypes.RESET_PASSWORD:
-            return `Najot platformasidan passwordni almashtirish uchun code :${otp}\n Bu code ni xech kimga bermang!`
-
-            case EverificationTypes.EDIT_PHONE:
-            return `Najot platformasidan telefon nomerni almashtirish uchun code :${otp}\n Bu code ni xech kimga bermang!`
-            
+            return `Fixoo platformasida telefoningizni o'zgartirish uchun tasdiqlash kodi: ${otp}. Kodni hech kimga bermang!`;
+        case EverificationTypes.RESET_PASSWORD:
+            return `Fixoo platformasida parolingizni tiklash uchun tasdiqlash kodi: ${otp}. Kodni hech kimga bermang!`;
+        case EverificationTypes.EDIT_PHONE:
+            return `Fixoo platformasida telefoningizni o'zgartirish uchun tasdiqlash kodi: ${otp}. Kodni hech kimga bermang!`;
     }
+
 }

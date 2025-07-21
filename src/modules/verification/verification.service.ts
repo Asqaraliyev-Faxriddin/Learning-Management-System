@@ -77,7 +77,7 @@ export class VerificationService {
         }
 
         const otp = generateOtp()
-        await this.redis.set(key,JSON.stringify(otp),SectoMills(5000))
+        await this.redis.set(key,JSON.stringify(otp),SectoMills(100))
         await this.smsService.sendSms(getMessages(type,otp),phone)
         return {message:"Confirmation code Sent"}
         
@@ -94,7 +94,7 @@ export class VerificationService {
             throw new HttpException("OTP expired!",HttpStatus.BAD_REQUEST)
         }
 
-        if(otp !==JSON.parse(session).otp){
+        if(otp !==JSON.parse(session)){
             throw new HttpException("invalid OTP!",HttpStatus.BAD_REQUEST)
 
         }

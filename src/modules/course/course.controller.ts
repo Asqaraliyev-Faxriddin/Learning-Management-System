@@ -1,18 +1,17 @@
-import {Controller,Get,Post,Body,Patch,Param,Delete,Query,UseInterceptors,UploadedFile,UseGuards,} from "@nestjs/common";
+import {Controller,Get,Post,Body,Patch,Param,Delete,Query,UseInterceptors,UploadedFile,UseGuards, UploadedFiles,} from "@nestjs/common";
 import {CourseAllDto,CreateCourseDto,UpdateCourseDto,AssistantAddCourse,CourseMentorAllDto,} from "./dto/create-course.dto";
 import { CourseService } from "./course.service";
-import { FileInterceptor } from "@nestjs/platform-express";
+import { FileFieldsInterceptor, FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { ApiTags, ApiOperation, ApiQuery, ApiBody, ApiConsumes, ApiBearerAuth } from "@nestjs/swagger";
 import { RolesGuard } from "src/common/guards/roles.guard";
 import { Roles } from "src/common/decorators/Roles.decorator";
 import { UserRole } from "@prisma/client";
 import { AuthGuard } from "src/common/guards/jwt-auth.guard";
-
 @ApiTags("Course")
 @ApiBearerAuth()
 @Controller("course")
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, RolesGuard)
 export class CourseController {
   constructor(private readonly courseService: CourseService) {}
 
@@ -41,7 +40,7 @@ export class CourseController {
   }
 
   @Get("my/:id")
-  @ApiOperation({ summary: "Mentor o‘zi yaratgan course ni olish" })
+  @ApiOperation({ summary: "Mentor o'zi yaratgan course ni olish" })
   myCourse(@Param("id") id: string) {
     return this.courseService.myCourse(id);
   }
@@ -72,66 +71,108 @@ export class CourseController {
 
   @Post("create")
   @UseInterceptors(
-    FileInterceptor("banner", {
-      storage: diskStorage({
-        destination: "./uploads/banner",
-        filename: (req, file, cb) => {
-          const uniqueName = Date.now() + "-" + Math.round(Math.random() * 1e9) + file.originalname;
-          cb(null, uniqueName);
-        },
-      }),
-    }),
+    FileFieldsInterceptor(
+      [
+        { name: 'banner', maxCount: 1 },
+        { name: 'introvideo', maxCount: 1 },
+      ],
+      {
+        storage: diskStorage({
+          destination: (req, file, cb) => {
+            if (file.fieldname === 'banner') cb(null, './uploads/banner');
+            else if (file.fieldname === 'introvideo') cb(null, './uploads/Introvideo');
+          },
+          filename: (req, file, cb) => {
+            const uniqueName = Date.now() + Math.round(Math.random() * 1e9) + '-' + file.originalname;
+            cb(null, uniqueName);
+          },
+        }),
+      }
+    )
   )
-  @UseGuards(AuthGuard,RolesGuard)
-  @Roles(UserRole.MENTOR,UserRole.ADMIN)
-  @ApiConsumes("multipart/form-data")
+  @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
-      type: "object",
+      type: 'object',
       properties: {
-        banner: {
-          type: "string",
-          format: "binary",
-        },
-        name: { type: "string" },
-        about: { type: "string" },
-        price: { type: "string" },
-        level: { type: "string", enum: ["BEGINNER", "INTERMEDIATE", "ADVANCED"] },
-        categoryId: { type: "string" },
+        banner: { type: 'string', format: 'binary' },
+        introvideo: { type: 'string', format: 'binary' },
+        name: { type: 'string' },
+        about: { type: 'string' },
+        price: { type: 'string' },
+        level: { type: 'string', enum: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'] },
+        categoryId: { type: 'string' },
       },
     },
   })
-  @ApiOperation({ summary: "Yangi course yaratish (mentor tomonidan)" })
+  @ApiOperation({ summary: "Yangi course yaratish (mentor va admin uchun)" })
+  @Roles(UserRole.ADMIN, UserRole.MENTOR)
   async createCourse(
     @Query("mentorId") id: string,
-    @UploadedFile() file: Express.Multer.File,
-    @Body() payload: CreateCourseDto,
+    @UploadedFiles()
+    files: {
+      banner?: Express.Multer.File[];
+      introvideo?: Express.Multer.File[];
+    },
+    @Body() payload: CreateCourseDto
   ) {
-    return this.courseService.createCourse(id, payload, file.filename);
+    const bannerFilename = files.banner?.[0]?.filename || null;
+    const introFilename = files.introvideo?.[0]?.filename || null;
+
+    return this.courseService.createCourse(id, payload, bannerFilename!, introFilename!);
   }
 
   @Patch("update-mentor")
   @UseInterceptors(
-    FileInterceptor("introVideo", {
-      storage: diskStorage({
-        destination: "./uploads/banner",
-        filename: (req, file, cb) => {
-          const filename = Date.now() + "-" + Math.round(Math.random() * 1e9) + file.originalname;
-          cb(null, filename);
-        },
-      }),
-    }),
+    FileFieldsInterceptor(
+      [
+        { name: 'banner', maxCount: 1 },
+        { name: 'introvideo', maxCount: 1 },
+      ],
+      {
+        storage: diskStorage({
+          destination: (req, file, cb) => {
+            if (file.fieldname === 'banner') cb(null, './uploads/banner');
+            else if (file.fieldname === 'introvideo') cb(null, './uploads/Introvideo');
+          },
+          filename: (req, file, cb) => {
+            const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1e9) + '-' + file.originalname;
+            cb(null, uniqueName);
+          },
+        }),
+      }
+    )
   )
-  @UseGuards(RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @ApiConsumes("multipart/form-data")
-  @ApiOperation({ summary: "Mentor tomonidan course ni yangilash (video bilan)" })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        banner: { type: 'string', format: 'binary' },
+        introvideo: { type: 'string', format: 'binary' },
+        name: { type: 'string' },
+        about: { type: 'string' },
+        price: { type: 'string' },
+        level: { type: 'string', enum: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'] },
+        categoryId: { type: 'string' },
+      },
+    },
+  })
+  @Roles(UserRole.ADMIN, UserRole.MENTOR)
+  @ApiOperation({ summary: "Course ni yangilash (mentor tomonidan)" })
   async updateMentorCourse(
     @Query("courseId") courseId: string,
-    @UploadedFile() file: Express.Multer.File,
-    @Body() payload: UpdateCourseDto,
+    @UploadedFiles()
+    files: {
+      banner?: Express.Multer.File[];
+      introvideo?: Express.Multer.File[];
+    },
+    @Body() payload: UpdateCourseDto
   ) {
-    return this.courseService.updateMentorCourse(courseId, payload, file);
+    const bannerFilename = files.banner?.[0]?.filename || null;
+    const introFilename = files.introvideo?.[0]?.filename || null;
+
+    return this.courseService.updateMentorCourse(courseId, payload, bannerFilename!, introFilename!);
   }
 
   @Patch("publish/:id")

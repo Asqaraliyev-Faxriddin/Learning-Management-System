@@ -12,7 +12,7 @@ export class AssignedCourseController {
     return this.assignedCourseService.create(createAssignedCourseDto);
   }
 
-  @Get()
+  @Get() 
   findAll() {
     return this.assignedCourseService.findAll();
   }

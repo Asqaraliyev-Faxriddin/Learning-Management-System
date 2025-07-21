@@ -519,14 +519,15 @@ export class CourseService {
   }
 
 
-  async createCourse(id:string,payload: CreateCourseDto, url: string) {
-    let banner = `http://localhost:3000//banner/url/${url}`;
+  async createCourse(id:string,payload: CreateCourseDto, banner_url: string,intro_url:string) {
+ 
     let { name, about, price, level, categoryId } = payload;
   
     let oldcategory = await this.prisma.courseCategory.findUnique({
       where: { id: payload.categoryId },
     });
-    if (!oldcategory) throw new NotFoundException("Category not found");
+    if (!oldcategory) {
+      throw new NotFoundException("Category not found");}
     
     let oldmentor = await this.prisma.users.findFirst({
       where: {
@@ -542,11 +543,12 @@ export class CourseService {
     let data = await this.prisma.course.create({
       data: {
         name,
+        introVideo:intro_url,
         about,
         price,
         level: CourseLevel[level],
         cursecategoryId:categoryId,
-        banner, 
+        banner:banner_url, 
         mentorId:id
       },
 
@@ -657,7 +659,7 @@ export class CourseService {
   }
 
 
-  async updateMentorCourse(courseId: string, payload: UpdateCourseDto, file?: Express.Multer.File) {
+  async updateMentorCourse(courseId: string, payload: UpdateCourseDto, banner_url:string,intro_url:string) {
     let course = await this.prisma.course.findFirst({
       where: { id: courseId },
     });
@@ -672,23 +674,36 @@ export class CourseService {
     if (!course) throw new NotFoundException("Course not found");
   
     let introVideo = course.introVideo;
+    let banner = course.banner
   
-    if (file) {
+    if (intro_url) {
 
+      introVideo = intro_url
   
-      let oldPath = path.join(process.cwd(),"uploads","", path.basename(course.introVideo!));
+      let oldPathintro = path.join(process.cwd(),"uploads","Introvideo", course.introVideo!);
+      if (fs.existsSync(oldPathintro)) {
+        fs.unlinkSync(oldPathintro);
+      }
+      
+
+    }
+
+
+    if (banner) {
+
+      banner = banner_url
+  
+      let oldPath = path.join(process.cwd(),"uploads","banner",course.introVideo!);
       if (fs.existsSync(oldPath)) {
         fs.unlinkSync(oldPath);
       }
-  
-      introVideo = `http://localhost:3000/banner/url/${file.filename}`;
-    }
   
     let updated = await this.prisma.course.update({
       where: { id: courseId },
       data: {
         ...payload,
-        introVideo
+        introVideo,
+        banner
       }
     });
   
@@ -699,6 +714,6 @@ export class CourseService {
     };
   }
 
-  
 
+}
 }

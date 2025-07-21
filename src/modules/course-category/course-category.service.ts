@@ -33,7 +33,8 @@ export class CourseCategoryService {
     let data = await this.prisma.courseCategory.findMany({
       where:whereFilter,
       include:{
-        courses:true
+        courses:true,
+        
       },
       take:limit,
       skip:(offset-1)*limit,

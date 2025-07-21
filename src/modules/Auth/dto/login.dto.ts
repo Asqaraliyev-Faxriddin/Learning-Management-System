@@ -4,7 +4,7 @@ import { ApiProperty } from "@nestjs/swagger";
 export class LoginDto {
     
     @ApiProperty({
-        example: "+998901234567",
+        example: "+998903641207",
         description: "Foydalanuvchining telefon raqami",
     })
     @IsNotEmpty()
