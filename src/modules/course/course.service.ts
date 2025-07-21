@@ -31,7 +31,7 @@ export class CourseService {
 
 
     let filter:any = []
-
+    if(search){
     filter.push({
       Cursecategory: {
         is: {
@@ -42,6 +42,7 @@ export class CourseService {
         }
       }
     })
+  }
     if(level){
       filter.push({
         level:level
@@ -670,6 +671,7 @@ export class CourseService {
       }
     })
 
+
     if(!courseCategory) throw new NotFoundException("Category not found ")
     if (!course) throw new NotFoundException("Course not found");
   
@@ -688,12 +690,12 @@ export class CourseService {
 
     }
 
-
+    
     if (banner) {
 
       banner = banner_url
   
-      let oldPath = path.join(process.cwd(),"uploads","banner",course.introVideo!);
+      let oldPath = path.join(process.cwd(),"uploads","banner",course.banner!);
       if (fs.existsSync(oldPath)) {
         fs.unlinkSync(oldPath);
       }

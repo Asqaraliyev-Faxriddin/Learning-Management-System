@@ -1,4 +1,4 @@
-import {Controller,Get,Post,Body,Patch,Param,Delete,Query,UseInterceptors,UploadedFile,UseGuards, UploadedFiles,} from "@nestjs/common";
+import {Controller,Get,Post,Body,Patch,Param,Delete,Query,UseInterceptors,UploadedFile,UseGuards, UploadedFiles, Req,} from "@nestjs/common";
 import {CourseAllDto,CreateCourseDto,UpdateCourseDto,AssistantAddCourse,CourseMentorAllDto,} from "./dto/create-course.dto";
 import { CourseService } from "./course.service";
 import { FileFieldsInterceptor, FileInterceptor } from "@nestjs/platform-express";
@@ -6,7 +6,7 @@ import { diskStorage } from "multer";
 import { ApiTags, ApiOperation, ApiQuery, ApiBody, ApiConsumes, ApiBearerAuth } from "@nestjs/swagger";
 import { RolesGuard } from "src/common/guards/roles.guard";
 import { Roles } from "src/common/decorators/Roles.decorator";
-import { UserRole } from "@prisma/client";
+import { CourseLevel, UserRole } from "@prisma/client";
 import { AuthGuard } from "src/common/guards/jwt-auth.guard";
 @ApiTags("Course")
 @ApiBearerAuth()
@@ -107,19 +107,13 @@ export class CourseController {
   })
   @ApiOperation({ summary: "Yangi course yaratish (mentor va admin uchun)" })
   @Roles(UserRole.ADMIN, UserRole.MENTOR)
-  async createCourse(
-    @Query("mentorId") id: string,
-    @UploadedFiles()
-    files: {
-      banner?: Express.Multer.File[];
-      introvideo?: Express.Multer.File[];
-    },
+  async createCourse(@Req() req: Request,@UploadedFiles()files: {banner?: Express.Multer.File[];introvideo?: Express.Multer.File[];},
     @Body() payload: CreateCourseDto
   ) {
     const bannerFilename = files.banner?.[0]?.filename || null;
     const introFilename = files.introvideo?.[0]?.filename || null;
 
-    return this.courseService.createCourse(id, payload, bannerFilename!, introFilename!);
+    return this.courseService.createCourse(req["user"].id, payload, bannerFilename!, introFilename!);
   }
 
   @Patch("update-mentor")
@@ -153,8 +147,8 @@ export class CourseController {
         name: { type: 'string' },
         about: { type: 'string' },
         price: { type: 'string' },
-        level: { type: 'string', enum: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'] },
-        categoryId: { type: 'string' },
+        level: { type: 'string', enum: Object.values(CourseLevel) },
+        cursecategoryId: { type: 'string' },
       },
     },
   })

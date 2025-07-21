@@ -90,7 +90,7 @@ export class CourseMentorAllDto {
     @IsString()
     @IsNotEmpty()
     @IsEnum(CourseLevel)
-    level?:string
+    level?:CourseLevel
 
     
     @IsOptional()
@@ -175,7 +175,8 @@ export class CreateCourseDto {
     @IsEnum(CourseLevel)
     @ApiPropertyOptional({ example: "INTERMEDIATE", enum: CourseLevel, description: "Kurs darajasi" })
     level?: CourseLevel;
-  
+    
+
     @IsOptional()
     @ApiPropertyOptional({ example: "clx1cat456xyz", description: "Category ID" })
     cursecategoryId?: string;
