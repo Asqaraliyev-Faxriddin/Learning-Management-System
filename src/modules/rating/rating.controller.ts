@@ -61,11 +61,12 @@ export class RatingController {
   @ApiOperation({ summary: "Reytingni tahrirlash" })
   @ApiResponse({ status: 200, description: "Reyting yangilandi" })
   async update(
+    @Req() req,
     @Param("id", ParseUUIDPipe) id: string,
     @Body("rate", ParseIntPipe) rate: number,
     @Body("comment") comment?: string,
   ) {
-    return this.ratingService.update(id, rate, comment);
+    return this.ratingService.update(req.user.id,id, rate, comment,);
   }
 
   @Delete("/:id")

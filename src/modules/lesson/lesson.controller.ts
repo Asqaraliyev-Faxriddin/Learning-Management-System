@@ -1,5 +1,5 @@
 
-import { Controller, Post, Put, Get, Delete, Param, Body, UploadedFile, UseInterceptors, Query, BadRequestException, UseGuards } from "@nestjs/common";
+import { Controller, Post, Put, Get, Delete, Param, Body, UploadedFile, UseInterceptors, Query, BadRequestException, UseGuards, Req } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from "path";
@@ -81,14 +81,14 @@ export class LessonController {
 
   @Get(":id")
   @ApiOperation({ summary: "Darsni olish" })
-  getSingle(@Param("id") id: string) {
-    return this.lessonService.getSingle(id);
+  getSingle(@Param("id") id: string,@Req() req) {
+    return this.lessonService.getSingle(req.user.id,id);
   }
 
   @Get("detail/:id")
   @ApiOperation({ summary: "To'liq dars ma'lumotlarini olish" })
-  getDetail(@Param("id") id: string) {
-    return this.lessonService.getDetail(id);
+  getDetail(@Param("id") id: string,@Req() req) {
+    return this.lessonService.getDetail(req.user.id,id);
   }
 
   @Roles(UserRole.STUDENT, UserRole.ASSISTANT)

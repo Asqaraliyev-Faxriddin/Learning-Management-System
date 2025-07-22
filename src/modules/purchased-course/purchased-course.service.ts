@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/core/prisma/prisma.service';
 import { PurchasedCourseAllDto, PurchasedCoursePaymentDto, PurchasedOneDto } from './dto/create-purchased-course.dto';
 import { PaidVia } from '@prisma/client';
@@ -65,10 +65,17 @@ export class PurchasedCourseService {
 
   }
 
-  async PurchasedCourseStudent(course_id:string){
+  async PurchasedCourseStudent(id:string,course_id:string){
+ 
+      let isPurchased = await this.prisma.purchasedCourse.findFirst({
+        where: {courseId:course_id,userId:id },
+      });
+      
+      if(!isPurchased) throw new ConflictException("Payment Cash")
+   
     let oldcourse = await  this.prisma.course.findFirst({
       where:{
-        id:course_id
+        id:course_id,
       }
     })
 
@@ -76,10 +83,19 @@ export class PurchasedCourseService {
 
     let data = await this.prisma.purchasedCourse.findFirst({
       where:{
-        courseId:course_id
+        courseId:course_id,
+        userId:id
       },
       include:{
-        course:true,
+        course:{
+          select:{
+            lessonBolimlar:{
+              select:{
+                lessons:true
+              }
+            }
+          }
+        },
         
       }
     })

@@ -1,5 +1,5 @@
 // src/modules/rating/rating.service.ts
-import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
+import { Injectable, ForbiddenException, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from 'src/core/prisma/prisma.service';
 import { CreateCourseRatingDto } from './dto/create-rating.dto';
 
@@ -10,6 +10,14 @@ export class RatingService {
   async create(userId: string, dto: CreateCourseRatingDto) {
     let { courseId, rate, comment } = dto;
 
+      let isPurchased = await this.prisma.purchasedCourse.findFirst({
+        where: { courseId, userId },
+      });
+    
+      if (!isPurchased) throw new ConflictException("Payment Cash");
+    
+
+
     let olduser = await this.prisma.users.findFirst({
       where:{
         id:userId
@@ -17,7 +25,7 @@ export class RatingService {
     })
     if(!olduser) throw new NotFoundException("User not found")
    
-
+  
 
     let oldcourse = await this.prisma.rating.findFirst({
       where: { courseId, userId },
@@ -121,8 +129,10 @@ export class RatingService {
     await this.prisma.rating.delete({ where: { id } });
   }
 
-  async update(id: string, rate: number, comment?: string) {
+  async update(userId:string,id: string, rate: number, comment?: string,) {
     
+
+
     let oldcourse = await this.prisma.rating.findFirst({
       where:{
         id
@@ -130,6 +140,11 @@ export class RatingService {
     })
     if(!oldcourse) throw new NotFoundException("Course rating not found")
    
+      let isPurchased = await this.prisma.purchasedCourse.findFirst({
+        where: { courseId:oldcourse.id, userId },
+      });
+    
+      if (!isPurchased) throw new ConflictException("Payment Cash");
     
     
     let data =await this.prisma.rating.update({

@@ -5,7 +5,7 @@ import { PurchasedCourseService } from './purchased-course.service';
 
 import { Roles } from 'src/common/decorators/Roles.decorator';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { PurchasedCourseAllDto, PurchasedCoursePaymentDto, PurchasedOneDto } from './dto/create-purchased-course.dto';
 
 @ApiTags('Purchased Courses')
@@ -43,9 +43,9 @@ export class PurchasedCoursesController {
   @Roles(UserRole.STUDENT)
   @ApiOperation({ summary: 'STUDENT - Get one purchased course by course ID' })
   @ApiParam({ name: 'course_id', required: true })
-  @ApiResponse({ status: 200, description: 'Purchased course detail' })
-  async getMyCourseById(@Param('course_id') courseId: string) {
-    return this.purchasedCoursesService.PurchasedCourseStudent(courseId);
+  @ApiResponse({ status: 200,  description: 'Purchased course detail' })
+  async getMyCourseById(@Param('course_id') courseId: string,@Req() req) {
+    return this.purchasedCoursesService.PurchasedCourseStudent(req.user.id,courseId);
   }
 
   @Get('course/:id/students')

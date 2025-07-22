@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/core/prisma/prisma.service";
 import { CreateLessonDto, UpdateLessonDto } from "./dto/create-lesson.dto";
 
@@ -6,7 +6,7 @@ import { CreateLessonDto, UpdateLessonDto } from "./dto/create-lesson.dto";
 export class LessonService {
   constructor(private prisma: PrismaService) {}
   async create(dto: CreateLessonDto, video?: Express.Multer.File) {
-    const videoUrl = video ? `http://localhost:3000/video/url/uploads/${video.filename}` : "";
+    let videoUrl = video ? `http://localhost:3000/video/url/uploads/${video.filename}` : "";
   
     let data = await this.prisma.lesson.create({
       data: {
@@ -23,10 +23,10 @@ export class LessonService {
   
 
   async update(id: string, dto: UpdateLessonDto, video?: Express.Multer.File) {
-    const lesson = await this.prisma.lesson.findUnique({ where: { id } });
+    let lesson = await this.prisma.lesson.findUnique({ where: { id } });
     if (!lesson) throw new NotFoundException("Lesson not found");
 
-    const videoUrl = video ? `http://localhost:3000/video/url/uploads/${video.filename}` : "";
+    let videoUrl = video ? `http://localhost:3000/video/url/uploads/${video.filename}` : "";
 
     return this.prisma.lesson.update({
       where: { id },
@@ -41,20 +41,43 @@ export class LessonService {
   }
 
   async delete(id: string) {
-    const lesson = await this.prisma.lesson.findUnique({ where: { id } });
+    let lesson = await this.prisma.lesson.findUnique({ where: { id } });
     if (!lesson) throw new NotFoundException("Lesson not found");
 
     return this.prisma.lesson.delete({ where: { id } });
   }
 
-  async getSingle(lessonId: string) {
-    const lesson = await this.prisma.lesson.findUnique({ where: { id: lessonId } });
+  async getSingle(id:string,lessonId: string) {
+
+    let lesson = await this.prisma.lesson.findUnique({ where: { id: lessonId } });
     if (!lesson) throw new NotFoundException("Lesson not found");
+    
+    let data = await this.prisma.lessonBolim.findFirst({
+      where:{
+        id:lesson.bolimId
+      },
+      include:{
+        course:true,
+      }
+    })
+
+    let isPurchased = await this.prisma.purchasedCourse.findFirst({
+      where: {
+        userId: id,
+        courseId: lesson.courseId, 
+      }
+    });
+    if (!isPurchased) {
+      throw new ConflictException("Payment Cash");
+    }
+    
+    
+    
     return lesson;
   }
 
-  async getDetail(id: string) {
-    const lesson = await this.prisma.lesson.findUnique({
+  async getDetail(userId:string,id: string) {
+    let lesson = await this.prisma.lesson.findUnique({
       where: { id },
       include: {
         Bolim: {
@@ -65,13 +88,59 @@ export class LessonService {
       },
     });
     if (!lesson) throw new NotFoundException("Lesson not found");
+    
+    let oldLesson = await this.prisma.lessonBolim.findFirst({
+      where:{
+        id
+      },
+        include:{
+          course:true
+        }
+    
+    })
+
+    if(!oldLesson) throw new NotFoundException("Lesson not found")
+    
+    let isPurchased = await this.prisma.purchasedCourse.findFirst({
+      where: {
+        userId,
+        courseId: oldLesson.courseId, 
+      }
+    });
+    if (!isPurchased) {
+      throw new ConflictException("Payment Cash");
+    }
+    
     return lesson;
   }
 
   async setView(userId: string, lessonId: string, view: boolean) {
-    const existing = await this.prisma.lessonView.findFirst({
+    let existing = await this.prisma.lessonView.findFirst({
       where: { lessonId, userId },
     });
+
+    if(!existing) throw new NotFoundException("Lesson View not found")
+      let oldLesson = await this.prisma.lessonBolim.findFirst({
+    where:{
+      id:lessonId
+    },
+      include:{
+        course:true
+      }
+  
+  })
+
+  if(!oldLesson) throw new ConflictException("Lesson Bolim not found") 
+      
+      let isPurchased = await this.prisma.purchasedCourse.findFirst({
+        where: {
+          userId,
+          courseId: oldLesson.courseId, 
+        }
+      });
+      if (!isPurchased) {
+        throw new ConflictException("Payment Cash");
+      }
 
     if (existing) {
       return this.prisma.lessonView.update({
@@ -86,7 +155,7 @@ export class LessonService {
   }
 
   async setLastActivity(userId: string, lessonId: string, url: string) {
-    const lesson = await this.prisma.lesson.findUnique({
+    let lesson = await this.prisma.lesson.findUnique({
       where: { id: lessonId },
       include: {
         Bolim: {
@@ -98,6 +167,30 @@ export class LessonService {
     });
 
     if (!lesson) throw new NotFoundException("Lesson not found");
+
+    let oldLesson = await this.prisma.lessonBolim.findFirst({
+      where:{
+        id:lessonId
+      },
+        include:{
+          course:true
+        }
+    
+    })
+  
+    if(!oldLesson) throw new ConflictException("Lesson Bolim not found") 
+        
+        let isPurchased = await this.prisma.purchasedCourse.findFirst({
+          where: {
+            userId,
+            courseId: oldLesson.courseId, 
+          }
+        });
+        if (!isPurchased) {
+          throw new ConflictException("Payment Cash");
+        }
+
+
 
     return this.prisma.lastActivity.upsert({
       where: { userId },
