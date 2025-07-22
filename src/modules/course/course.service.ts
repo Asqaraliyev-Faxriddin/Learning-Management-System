@@ -287,6 +287,23 @@ export class CourseService {
   
     let filter:any = []
 
+    let olduser = await this.prisma.users.findFirst({
+      where:{
+        id
+      }
+    })
+
+    if(!olduser) throw new NotFoundException("Mentor not found")
+
+    if(category_id){
+      let oldc = await this.prisma.courseCategory.findFirst({
+        where:{
+          id:category_id
+        }
+      })
+
+      if(!oldc) throw new NotFoundException("Category not found")
+    }
 
     if(search){
       filter.push({
@@ -623,7 +640,7 @@ export class CourseService {
       where:{
         id
       }
-    })
+    })  
 
     if(!oldcourse) throw new NotFoundException("Course Not found")
 
@@ -631,6 +648,7 @@ export class CourseService {
       where:{id},data:{mentorId:mentor_id}
     })
 
+    if(!data) throw new NotFoundException("Mentor not found")
     return {
       status:true,
       message:"Succase updated mentor",data}
@@ -699,7 +717,8 @@ export class CourseService {
       if (fs.existsSync(oldPath)) {
         fs.unlinkSync(oldPath);
       }
-  
+      
+    }
     let updated = await this.prisma.course.update({
       where: { id: courseId },
       data: {
@@ -717,5 +736,4 @@ export class CourseService {
   }
 
 
-}
 }

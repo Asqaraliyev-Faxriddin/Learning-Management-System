@@ -1,34 +1,56 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { LessonFileService } from './lesson-file.service';
-import { CreateLessonFileDto } from './dto/create-lesson-file.dto';
-import { UpdateLessonFileDto } from './dto/update-lesson-file.dto';
+import {Controller,Post,Get,Param,Body,UseGuards,UploadedFile,UseInterceptors,} from "@nestjs/common";
+import { LessonFileService } from "./lesson-file.service";
+import { CreateLessonFileDto } from "./dto/create-lesson-file.dto";
+import {ApiBearerAuth,ApiBody,ApiConsumes,ApiOperation,ApiTags,} from "@nestjs/swagger";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { AuthGuard } from "src/common/guards/jwt-auth.guard";
+import { RolesGuard } from "src/common/guards/roles.guard";
+import { UserRole } from "@prisma/client";
+import { Roles } from "src/common/decorators/Roles.decorator";
 
-@Controller('lesson-file')
+@ApiTags("Lesson File")
+@ApiBearerAuth()
+@UseGuards(AuthGuard, RolesGuard)
+@Controller("lesson-file")
 export class LessonFileController {
   constructor(private readonly lessonFileService: LessonFileService) {}
 
-  @Post()
-  create(@Body() createLessonFileDto: CreateLessonFileDto) {
-    return this.lessonFileService.create(createLessonFileDto);
+  @Post("create")
+  @Roles(UserRole.ADMIN,UserRole.MENTOR)
+  @ApiOperation({ summary: "Lesson fayl yaratish (admin uchun)" })
+  @ApiConsumes("multipart/form-data")
+  @ApiBody({
+    description: "Yangi LessonFile qo'shish",
+    type: CreateLessonFileDto,
+  })
+  @UseInterceptors(FileInterceptor("file"))
+  async createLessonFile(
+    @Body() body: CreateLessonFileDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const filename = file?.filename;
+    return this.lessonFileService.CreateLessonFile(body, filename);
   }
 
-  @Get()
-  findAll() {
-    return this.lessonFileService.findAll();
+  @Get(":id")
+  @Roles(UserRole.ADMIN, UserRole.MENTOR)
+  @ApiOperation({ summary: "Lesson file olish (ID bo'yicha)" })
+  async getOne(@Param("id") id: string) {
+    return this.lessonFileService.lessonfilesone(id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.lessonFileService.findOne(+id);
+  @Get("lesson/:id")
+  @Roles(UserRole.ADMIN, UserRole.MENTOR)
+  @ApiOperation({ summary: "Faqat lesson file (include yo'q)" })
+  async getOnlyLessonFile(@Param("id") id: string) {
+    return this.lessonFileService.Lesson(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLessonFileDto: UpdateLessonFileDto) {
-    return this.lessonFileService.update(+id, updateLessonFileDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.lessonFileService.remove(+id);
+  @Get("all")
+  @Roles(UserRole.ADMIN, UserRole.MENTOR)
+  @ApiOperation({ summary: "Barcha lesson filelar" })
+  async LessonAll() {
+    return this.lessonFileService.LessonAll();
   }
 }
+  

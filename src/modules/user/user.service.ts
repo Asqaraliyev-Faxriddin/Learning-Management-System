@@ -70,18 +70,15 @@ export class UserService {
   async mentorOne(id:string){
     
 
-    let oldUser = await this.prisma.mentorProfile.findFirst({
+    let oldUser = await this.prisma.users.findFirst({
       where:{id,
-        user:{
+      
           role:"MENTOR"
-        }
+        
       },
-      include:{
-        user:{
-          
-          include:{
-            mentorCourses:true,
-            purchasedCourses:true,
+      include:{   
+          mentorCourses:true,
+          purchasedCourses:true,
           ratings:true,
           questionAnswers:true,
           questions:true,
@@ -89,8 +86,8 @@ export class UserService {
           assignedCourses:true,
           lastActivity:true,
           homeworkSubs:true
-          }
-        }
+          
+        
       }
 
     })

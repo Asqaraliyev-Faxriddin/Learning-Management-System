@@ -59,12 +59,21 @@ export class LessonController {
   }
 
   @Roles(UserRole.ADMIN, UserRole.MENTOR)
-  @Put(":id")
-  @ApiOperation({ summary: "Darsni yangilash (video fayl bilan)" })
+  @Post()
+  @ApiOperation({ summary: "Yangi dars yaratish (video fayl bilan)" })
   @ApiConsumes("multipart/form-data")
   @ApiBody({
-    description: "Yangilangan dars ma'lumotlari va video fayl",
-    type: UpdateLessonDto,
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', example: 'Dars nomi' },
+        about: { type: 'string', example: 'Dars haqida' },
+        bolimId: { type: 'string', example: 'bolim-id' },
+        courseId: { type: 'string', example: 'course-id' },
+        video: { type: 'string', format: 'binary' },
+      },
+      required: ['name', 'about', 'bolimId', 'courseId'],
+    },
   })
   @UseInterceptors(FileInterceptor("video", { storage, fileFilter: videoFileFilter }))
   update(@Param("id") id: string,@Body() dto: UpdateLessonDto,@UploadedFile() video?: Express.Multer.File,

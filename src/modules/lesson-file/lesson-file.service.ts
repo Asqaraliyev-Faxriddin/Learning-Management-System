@@ -1,26 +1,77 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from 'src/core/prisma/prisma.service';
 import { CreateLessonFileDto } from './dto/create-lesson-file.dto';
-import { UpdateLessonFileDto } from './dto/update-lesson-file.dto';
 
 @Injectable()
 export class LessonFileService {
-  create(createLessonFileDto: CreateLessonFileDto) {
-    return 'This action adds a new lessonFile';
+  constructor(private prisma:PrismaService){}
+  async lessonfilesone(lesson_id:string){
+    let data = await this.prisma.lessonFile.findFirst({
+      where:{
+        id:lesson_id
+      },
+      include:{
+      lesson:true
+      }
+    })
+
+    if(!data) throw new NotFoundException("Lesson file not found")
+
+      return data
   }
 
-  findAll() {
-    return `This action returns all lessonFile`;
+
+  async CreateLessonFile(payload:CreateLessonFileDto,filename:string){
+    let {lessonId,notes} = payload
+
+    let oldLesson = await this.prisma.lesson.findFirst({
+      where:{
+        id:lessonId
+      }
+    })
+
+    if(!oldLesson) throw new NotFoundException("Lesson Not found")
+
+    let data = await this.prisma.lessonFile.create({
+      data:{
+        lessonId,
+        note:notes,
+        file:filename
+      },
+      include:{
+        lesson:true
+      }
+    })
+
+    return data
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} lessonFile`;
-  }
 
-  update(id: number, updateLessonFileDto: UpdateLessonFileDto) {
-    return `This action updates a #${id} lessonFile`;
-  }
+  async Lesson(id:string){
+    let oldLessonfile = await this.prisma.lessonFile.findFirst({
+      where:{
+        id
+      }
+    })
 
-  remove(id: number) {
-    return `This action removes a #${id} lessonFile`;
-  }
+    if(!oldLessonfile) throw new NotFoundException("Lesson file nt found")
+  
+      return {data:oldLessonfile}
+    }
+
+
+    async LessonAll(){
+      let oldLessonfile = await this.prisma.lessonFile.findMany({
+
+          
+        
+      })
+  
+    
+        return {data:oldLessonfile}
+      }
+  
+
+
+
 }

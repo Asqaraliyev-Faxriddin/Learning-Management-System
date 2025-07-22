@@ -1,7 +1,8 @@
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/core/prisma/prisma.service";
 import { CreateLessonDto, UpdateLessonDto } from "./dto/create-lesson.dto";
-
+import * as path from "path";
+import * as fs from "fs"
 @Injectable()
 export class LessonService {
   constructor(private prisma: PrismaService) {}
@@ -26,7 +27,18 @@ export class LessonService {
     let lesson = await this.prisma.lesson.findUnique({ where: { id } });
     if (!lesson) throw new NotFoundException("Lesson not found");
 
-    let videoUrl = video ? `http://localhost:3000/video/url/uploads/${video.filename}` : "";
+    
+    let videoUrl = video?.filename || lesson.video
+
+    if (video) {
+
+  
+      let oldPath = path.join(process.cwd(),"uploads","lesson",lesson.video);
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+      
+    }
 
     return this.prisma.lesson.update({
       where: { id },
@@ -37,6 +49,10 @@ export class LessonService {
         courseId: dto.courseId,
         bolimId: dto.bolimId,
       },
+      include:{
+        course:true,
+        Bolim:true
+      }
     });
   }
 
@@ -44,6 +60,10 @@ export class LessonService {
     let lesson = await this.prisma.lesson.findUnique({ where: { id } });
     if (!lesson) throw new NotFoundException("Lesson not found");
 
+    let oldPath = path.join(process.cwd(),"uploads","lesson",lesson.video);
+    if (fs.existsSync(oldPath)) {
+      fs.unlinkSync(oldPath);
+    }
     return this.prisma.lesson.delete({ where: { id } });
   }
 
