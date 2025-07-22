@@ -34,6 +34,10 @@ import { join } from 'path';
     {
       rootPath: join(process.cwd(), 'uploads/Introvideo'), 
       serveRoot: '/introvideo/url', 
+    },
+    {
+      rootPath: join(process.cwd(), 'uploads/homework'), 
+      serveRoot: '/homework/url', 
     }
   ), 
 
@@ -41,8 +45,7 @@ import { join } from 'path';
     PrismaModule ,AuthModule,VerificationModule,UserModule,
     ProfilesModule,CourseModule,CourseCategoryModule,PurchasedCourseModule,LessonModule, 
     LessonBolimModule,LessonViewModule, LessonFileModule,
-    RatingModule,  HomeworkModule,
-     ExamModule,
+    RatingModule,ExamModule,HomeworkModule,
     QuestionAnswerModule, SeaderModule,RedisModule, 
 
     

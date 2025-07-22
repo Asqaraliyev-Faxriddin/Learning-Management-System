@@ -20,3 +20,45 @@ export class CreateExamDto {
     @ApiProperty({example:"variantA",enum:ExamAnswer})
     answer: ExamAnswer
 }
+
+
+export class createManyQuestions{
+
+    
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({example:"questions"})
+    question :string
+    
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({example:"variant"})
+    variantA :string
+    
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({example:"variant"})
+    variantB :string
+    
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({example:"variant"})
+    variantC :string
+    
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({example:"variant"})
+    variantD :string
+
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({example:"answer",enum:ExamAnswer})
+    answer :ExamAnswer
+
+    
+    @IsNotEmpty()
+    @IsUUID()
+    @IsString()
+    @ApiProperty({example:"lessonbolimId"})
+    lessonbolimId :string
+}
