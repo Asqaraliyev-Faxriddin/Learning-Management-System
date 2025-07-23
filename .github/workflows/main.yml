@@ -29,7 +29,7 @@ jobs:
               git clone https://github.com/Asqaraliyev-Faxriddin/Learning-Management-System.git .
             else
               echo "Pulling latest"
-              git pull origin main
+              git pull origin main 
             fi
 
             echo "Stopping containers"
