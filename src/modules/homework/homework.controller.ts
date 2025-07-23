@@ -61,7 +61,7 @@ export class HomeworkController {
     return this.homeworkService.update(id, dto, fileName);
   }
 
-  @Delete(":id")
+  @Delete(":id") 
   @Roles(UserRole.ADMIN,UserRole.MENTOR,UserRole.ASSISTANT)
   @ApiOperation({ summary: "Homeworkni o'chirish (file bilan)" })
   @ApiParam({ name: "id", type: Number })
