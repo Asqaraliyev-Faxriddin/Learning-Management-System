@@ -20,23 +20,23 @@ jobs:
           username: ${{ secrets.DB_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            echo "Creating project folder if it doesn't exist"
+            echo "📁 Creating project folder if it doesn't exist"
             mkdir -p /home/ubuntu/prisma_and_auth
             cd /home/ubuntu/prisma_and_auth
 
             if [ ! -d .git ]; then
-              echo "Cloning repository"
-              git clone https://github.com/Asqaraliyev-Faxriddin/Learning-Management-System.git .
+              echo "🔁 Cloning repository..."
+              git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/Asqaraliyev-Faxriddin/Learning-Management-System.git .
             else
-              echo "Pulling latest"
+              echo "⬇️ Pulling latest changes..."
               git pull origin main
             fi
 
-            echo "Stopping containers"
-            docker compose down
+            echo "🛑 Stopping containers..."
+            docker compose down || true
 
-            echo "Building containers"
+            echo "⚙️ Building containers..."
             docker compose build
 
-            echo "Starting containers"
+            echo "🚀 Starting containers..."
             docker compose up -d
