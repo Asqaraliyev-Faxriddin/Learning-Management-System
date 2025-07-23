@@ -30,7 +30,7 @@ jobs:
             else
               echo "Pulling latest"
               git pull origin main 
-            fi
+            fi 
 
             echo "Stopping containers"
             docker compose down
