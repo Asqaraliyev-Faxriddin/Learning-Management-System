@@ -230,4 +230,12 @@ export class LessonService {
       },
     });
   }
+
+
+  async LessonAll(){
+
+    let data = await this.prisma.lesson.findMany({include:{course:true}})
+
+    return data
+  }
 }

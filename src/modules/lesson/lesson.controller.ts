@@ -12,8 +12,8 @@ import { UserRole } from "@prisma/client";
 import { Roles } from "src/common/decorators/Roles.decorator";
 import { RolesGuard } from "src/common/guards/roles.guard";
 
-const videoFileFilter = (req: any, file: Express.Multer.File, cb: Function) => {
-  const allowedTypes = ["video/mp4", "video/mkv", "video/webm"];
+let videoFileFilter = (req: any, file: Express.Multer.File, cb: Function) => {
+  let allowedTypes = ["video/mp4", "video/mkv", "video/webm"];
   // @ts-ignore
   if (!allowedTypes.includes(file.mimetype)) {
     return cb(new BadRequestException("Faqat video fayllar yuklash mumkin!"), false);
@@ -21,11 +21,11 @@ const videoFileFilter = (req: any, file: Express.Multer.File, cb: Function) => {
   cb(null, true);
 };
 
-const storage = diskStorage({
+let storage = diskStorage({
   destination: "./uploads/lesson",
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = extname(file.originalname);
+    let uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    let ext = extname(file.originalname);
     cb(null, `lesson-${uniqueSuffix}${ext}`);
   },
 });
@@ -59,7 +59,7 @@ export class LessonController {
   }
 
   @Roles(UserRole.ADMIN, UserRole.MENTOR)
-  @Post()
+  @Put()
   @ApiOperation({ summary: "Yangi dars yaratish (video fayl bilan)" })
   @ApiConsumes("multipart/form-data")
   @ApiBody({
@@ -94,10 +94,18 @@ export class LessonController {
     return this.lessonService.getSingle(req.user.id,id);
   }
 
+  @Roles(UserRole.ADMIN,UserRole.MENTOR)
   @Get("detail/:id")
   @ApiOperation({ summary: "To'liq dars ma'lumotlarini olish" })
   getDetail(@Param("id") id: string,@Req() req) {
     return this.lessonService.getDetail(req.user.id,id);
+  }
+
+  @Roles(UserRole.ADMIN,UserRole.MENTOR)
+  @Get("all/lessons")
+  @ApiOperation({ summary: "Barcha darslar" })
+  getAll() {
+    return this.lessonService.LessonAll();
   }
 
   @Roles(UserRole.STUDENT, UserRole.ASSISTANT)

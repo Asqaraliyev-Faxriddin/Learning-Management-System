@@ -22,6 +22,7 @@ export class CourseController {
   }
 
   @Get("full/all")
+  @Roles(UserRole.ADMIN,UserRole.MENTOR)
   @ApiOperation({ summary: "Barcha full course larni olish (barcha relationlar bilan)" })
   courseFullAll(@Query() payload: CourseAllDto) {
     return this.courseService.CoursefullAll(payload);
@@ -29,8 +30,8 @@ export class CourseController {
 
   @Get("one/:id")
   @ApiOperation({ summary: "Bitta course ni olish" })
-  courseOne(@Param("id") id: string) {
-    return this.courseService.CourseOne(id);
+  courseOne(@Req()req,@Param("id") id: string) {
+    return this.courseService.CourseOne(req.user.id,id);
   }
 
   @Get("full/one/:id")
@@ -40,36 +41,42 @@ export class CourseController {
   }
 
   @Get("my/:id")
+  @Roles(UserRole.ADMIN,UserRole.MENTOR)
   @ApiOperation({ summary: "Mentor o'zi yaratgan course ni olish" })
-  myCourse(@Param("id") id: string) {
-    return this.courseService.myCourse(id);
+  myCourse(@Req()req,@Param("id") id: string) {
+    return this.courseService.myCourse(req.user.id,id);
   }
 
   @Get("mentor/:id")
+  @Roles(UserRole.ADMIN,UserRole.MENTOR)
   @ApiOperation({ summary: "Mentor yaratgan barcha course lar" })
   coursesMentorAll(@Param("id") id: string, @Query() payload: CourseMentorAllDto) {
     return this.courseService.CoursesMentorAll(id, payload);
   }
 
   @Get("assigned/:id")
+  @Roles(UserRole.ADMIN,UserRole.MENTOR)
   @ApiOperation({ summary: "Assistant ga assign qilingan course lar" })
   assignedCourses(@Param("id") id: string, @Query() payload: CourseMentorAllDto) {
     return this.courseService.courses_assiged(id, payload);
   }
 
   @Get("assistant/:id")
+  @Roles(UserRole.ADMIN,UserRole.MENTOR)
   @ApiOperation({ summary: "Assistant biriktirilgan course ni olish" })
   foundAssistant(@Param("id") id: string) {
     return this.courseService.foundAssistant(id);
   }
 
   @Post("assistant/add")
+  @Roles(UserRole.ADMIN,UserRole.MENTOR)
   @ApiOperation({ summary: "Assistant ni course ga biriktirish" })
   addAssistant(@Body() payload: AssistantAddCourse) {
     return this.courseService.add_Assistant(payload);
   }
 
   @Post("create")
+  @Roles(UserRole.ADMIN,UserRole.MENTOR)
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -170,24 +177,28 @@ export class CourseController {
   }
 
   @Patch("publish/:id")
+  @Roles(UserRole.ADMIN,UserRole.MENTOR)
   @ApiOperation({ summary: "Course ni publish qilish" })
   coursePublish(@Param("id") id: string) {
     return this.courseService.CoursePublish(id);
   }
 
   @Patch("unpublish/:id")
+  @Roles(UserRole.ADMIN,UserRole.MENTOR)
   @ApiOperation({ summary: "Course ni unpublish qilish" })
   courseUnPublish(@Param("id") id: string) {
     return this.courseService.CourseunPublish(id);
   }
 
   @Patch("update-mentor-id/:id")
+  @Roles(UserRole.ADMIN,UserRole.MENTOR)
   @ApiOperation({ summary: "Course ga mentor biriktirish" })
   courseUpdateMentor(@Param("id") id: string, @Query("mentor_id") mentor_id: string) {
     return this.courseService.CourseUpdateMentor(id, mentor_id);
   }
 
   @Delete(":id")
+  @Roles(UserRole.ADMIN,UserRole.MENTOR)
   @ApiOperation({ summary: "Course ni o'chirish" })
   courseDelete(@Param("id") id: string) {
     return this.courseService.Coursedelete(id);

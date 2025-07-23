@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/core/prisma/prisma.service';
 import { AssistantAddCourse, CourseAllDto, CourseMentorAllDto, CreateCourseDto, UpdateCourseDto } from './dto/create-course.dto';
 import { CourseLevel } from '@prisma/client';
@@ -109,7 +109,8 @@ export class CourseService {
   
 
   
-  async CourseOne(id:string){
+  async CourseOne(userId:string,id:string){
+
 
     let data = await this.prisma.course.findFirst({
       where:{
@@ -117,6 +118,16 @@ export class CourseService {
       }
   })
     if(!data) throw new NotFoundException("Course not found")
+    
+      let isPurchased = await this.prisma.purchasedCourse.findFirst({
+        where: {
+          userId,
+          courseId: data.id, 
+        }
+      });
+      if (!isPurchased) {
+        throw new ConflictException("Payment Cash");
+      }
       return { succase:true,
         message:"Succase course",data}
   
@@ -252,7 +263,7 @@ export class CourseService {
   
   }
 
-  async myCourse(id:string){
+  async myCourse(userId:string,id:string){
 
     
     let data = await this.prisma.course.findFirst({
@@ -273,6 +284,8 @@ export class CourseService {
     })
   
     if(!data) throw new NotFoundException("Course not found")
+
+      
     return { 
       succase:true,
       message:"Succase my course",

@@ -8,7 +8,6 @@ import { PurchasedCourseModule } from './modules/purchased-course/purchased-cour
 import { RatingModule } from './modules/rating/rating.module';
 import { LessonBolimModule } from './modules/lesson-bolim/lesson-bolim.module';
 import { LessonModule } from './modules/lesson/lesson.module';
-import { LessonViewModule } from './modules/lesson-view/lesson-view.module';
 import { LessonFileModule } from './modules/lesson-file/lesson-file.module';
 import { HomeworkModule } from './modules/homework/homework.module';
 import { ExamModule } from './modules/exam/exam.module';
@@ -38,13 +37,17 @@ import { join } from 'path';
     {
       rootPath: join(process.cwd(), 'uploads/homework'), 
       serveRoot: '/homework/url', 
+    },
+    {
+      rootPath: join(process.cwd(), 'uploads/profile'), 
+      serveRoot: '/profile/url', 
     }
   ), 
 
 
     PrismaModule ,AuthModule,VerificationModule,UserModule,
     ProfilesModule,CourseModule,CourseCategoryModule,PurchasedCourseModule,LessonModule, 
-    LessonBolimModule,LessonViewModule, LessonFileModule,
+    LessonBolimModule, LessonFileModule,
     RatingModule,ExamModule,HomeworkModule,
     QuestionAnswerModule, SeaderModule,RedisModule, 
 

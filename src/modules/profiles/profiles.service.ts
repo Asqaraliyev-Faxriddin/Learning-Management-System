@@ -4,6 +4,8 @@
   import { VerificationService } from '../verification/verification.service';
   import { EverificationTypes } from 'src/common/types/verification';
   import * as bcrypt from "bcrypt"
+import * as fs from 'fs';
+import * as path from 'path';
 
   @Injectable()
   export class ProfilesService {
@@ -31,13 +33,25 @@
       }
 
 
-      async profileUpdate(id:string,payload:ProfileUpdateDto){
+      async profileUpdate(id:string,payload:ProfileUpdateDto,image?:string){
 
-        let {image,fullName} = payload
+        let {fullName} = payload
 
         let data = await this.prisma.users.findFirst({where:{id}})
 
       if(!data) throw new NotFoundException("User not found")
+
+        if (image) {
+          
+      let oldPath = path.join(process.cwd(),"uploads","profile",data.image!);
+          
+          if (fs.existsSync(oldPath)) {
+            fs.unlinkSync(oldPath);
+          }
+          
+        }
+
+
 
         if(image){
         data = await this.prisma.users.update({where:{id},data:{image}})
@@ -49,7 +63,7 @@
 
         }
 
-
+   
 
       if(data.role === "MENTOR"){
         data = await this.prisma.users.findFirst({where:{id},include:{mentorProfile:true}})

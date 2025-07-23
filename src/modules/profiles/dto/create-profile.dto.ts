@@ -4,15 +4,17 @@ import { IsNotEmpty, IsOptional, IsPhoneNumber, IsString, IsUUID } from "class-v
 export class ProfileUpdateDto {
     
     @IsOptional()
-    @ApiPropertyOptional({example:"Asqaraliyev Faxriddin"})
+    @ApiPropertyOptional({example:"Asqaraliyev Faxriddin",description:"Asqaraliyev Faxriddin"})
     @IsString()
     fullName?:string
 
     @IsOptional()
-    @IsString()
-    @ApiPropertyOptional({example:"Asqaraliyev Faxriddin"})
-    image?:string
-
+    @ApiPropertyOptional({
+    type: "string",
+    format: "binary",
+    description: "Profil rasmi",
+  })
+  image?: any;
 
 }
 

@@ -1,4 +1,4 @@
-import {Body,Controller,Post,Get,Param,Patch,Delete, UseGuards,} from "@nestjs/common";
+import {Body,Controller,Post,Get,Param,Patch,Delete, UseGuards, Req,} from "@nestjs/common";
 import { ExamService } from "./exam.service";
 import {CreateExamDto,createManyQuestions,} from "./dto/create-exam.dto";
 import { ApiTags, ApiOperation } from "@nestjs/swagger";
@@ -16,8 +16,8 @@ export class ExamController {
   @Roles(UserRole.STUDENT)
   @Get(":lessonGroupId")
   @ApiOperation({ summary: "Berilgan lessonGroupId bo'yicha testlar ro'yxatini olish" })
-  getByLessonGroupId(@Param("lessonGroupId") lessonGroupId: string) {
-    return this.examService.getByLessonGroupId(lessonGroupId);
+  getByLessonGroupId(@Req()req,@Param("lessonGroupId") lessonGroupId: string) {
+    return this.examService.getByLessonGroupId(req.user.id,lessonGroupId);
   }
 
   @Roles(UserRole.ADMIN,UserRole.MENTOR)
@@ -54,6 +54,7 @@ export class ExamController {
   updateExam(
     @Param("id") id: string,
     @Body() dto: Partial<createManyQuestions>,
+    @Req()req,
   ) {
     return this.examService.updateExam(id, dto);
   }
@@ -61,28 +62,28 @@ export class ExamController {
   @Roles(UserRole.ADMIN,UserRole.MENTOR)
   @Delete(":id")
   @ApiOperation({ summary: "Testni o'chirish" })
-  deleteExam(@Param("id") id: string) {
+  deleteExam(@Req()req,@Param("id") id: string) {
     return this.examService.deleteExam(id);
   }
 
   @Roles(UserRole.STUDENT)
   @Post("pass")
   @ApiOperation({ summary: "Foydalanuvchi testga javob beradi" })
-  passExam(@Body() dto: CreateExamDto) {
-    return this.examService.ExamPass(dto);
+  passExam(@Req()req,@Body() dto: CreateExamDto) {
+    return this.examService.ExamPass(req.user.id,dto);
   }
 
   @Roles(UserRole.ADMIN)
   @Get("result/all")
   @ApiOperation({ summary: "Barcha test natijalarini olish" })
-  getAllResults() {
+  getAllResults(@Req()req,) {
     return this.examService.getAllResults();
   }
 
   @Roles(UserRole.ADMIN)
   @Get("result/:id")
   @ApiOperation({ summary: "Berilgan LessonGroup bo'yicha test natijalarini olish" })
-  getResultsByLessonGroup(@Param("id") id: string) {
+  getResultsByLessonGroup(@Req()req,@Param("id") id: string) {
     return this.examService.getResultsByLessonGroup(id);
   }
 }
