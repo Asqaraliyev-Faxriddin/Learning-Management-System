@@ -7,7 +7,7 @@ import * as fs from "fs"
 export class LessonService {
   constructor(private prisma: PrismaService) {}
   async create(dto: CreateLessonDto, video?: Express.Multer.File) {
-    let videoUrl = video ? `http://localhost:3000/video/url/uploads/${video.filename}` : "";
+    let videoUrl = video ? `uploads/lesson/${video.filename}` : "";
   
     let data = await this.prisma.lesson.create({
       data: {
@@ -19,7 +19,7 @@ export class LessonService {
       },
     });
 
-    return data || "Malumot yoq"
+    return data
   }
   
 
