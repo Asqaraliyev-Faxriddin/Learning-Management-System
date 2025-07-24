@@ -22,7 +22,7 @@ jobs:
           script: |
             echo "Creating project folder if it doesn't exist"
             mkdir -p /home/ubuntu/loyiha
-            cd /home/ubuntu/prisma_and_auth
+            cd /home/ubuntu/loyiha
 
             if [ ! -d .git ]; then
               echo "Cloning repository"
