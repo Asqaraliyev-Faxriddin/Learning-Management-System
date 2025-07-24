@@ -1,4 +1,4 @@
-import {Controller,Get,Param,Query,Put,Delete,Body,UseGuards,HttpCode, Post,} from "@nestjs/common";
+import {Controller,Get,Param,Query,Put,Delete,Body,UseGuards,HttpCode, Post, Req,} from "@nestjs/common";
 import { LessonBolimService } from "../lesson-bolim/lesson-bolim.service";
 import { CreateLessonBolimDto, LessonBolimAllDto,LessonBolimUpdate } from "../lesson-bolim/dto/create-lesson-bolim.dto"; 
 import { AuthGuard } from "src/common/guards/jwt-auth.guard";
@@ -20,14 +20,8 @@ export class LessonBolimController {
   @ApiQuery({ name: "offset", required: false, type: Number, example: 1 })
   @ApiQuery({ name: "limit", required: false, type: Number, example: 10 })
   @ApiQuery({ name: "include_lesson", required: false, type: Boolean, example: true })
-  @ApiResponse({ status: 200, description: "Barcha lesson bolimlar ro'yxati" })
-  async getAllAdmin(
-    @Param("course_id") courseId: string,
-    @Query() query: LessonBolimAllDto,
-  ) {
-    return this.lessonBolimService.lessonbolimAdmin(
-      (query as any).user?.id,
-      { ...query, course_id: courseId },
+  async getAllAdmin(@Param("course_id") courseId: string,@Query() query: LessonBolimAllDto,@Req() req) {
+    return this.lessonBolimService.lessonbolimAdmin(req.user.id,{ ...query, course_id: courseId },
     );
   }
 
@@ -70,7 +64,7 @@ async createLessonBolim(
 
   @Roles(UserRole.ADMIN, UserRole.MENTOR)
   @Put(":id")
-  @ApiOperation({ summary: "Lesson bolimni yangilash" })
+  @ApiOperation({ summary: "Lesson bolimni yangilash Admin Mentor" })
   @ApiParam({ name: "id", description: "Lesson bolim ID" })
   @ApiResponse({ status: 200, description: "Yangilangan lesson bolim qaytariladi" })
   async update(
@@ -82,7 +76,7 @@ async createLessonBolim(
 
   @Roles(UserRole.ADMIN, UserRole.MENTOR)
   @Delete(":id")
-  @ApiOperation({ summary: "Lesson bolimni o'chirish" })
+  @ApiOperation({ summary: "Lesson bolimni o'chirish Admin Mentor" })
   @ApiParam({ name: "id", description: "Lesson bolim ID" })
   @ApiResponse({ status: 200, description: "O'chirilgan lesson bolim ma’lumotlari qaytariladi" })
   async delete(@Param("id") id: string) {

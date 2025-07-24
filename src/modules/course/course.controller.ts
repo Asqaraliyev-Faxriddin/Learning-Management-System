@@ -22,8 +22,8 @@ export class CourseController {
   }
 
   @Get("full/all")
-  @Roles(UserRole.ADMIN,UserRole.MENTOR)
-  @ApiOperation({ summary: "Barcha full course larni olish (barcha relationlar bilan)" })
+  @Roles(UserRole.ADMIN,UserRole.MENTOR,UserRole.ASSISTANT)
+  @ApiOperation({ summary: "Barcha full course larni olish (barcha relationlar bilan) Admin Mentor Assistant" })
   courseFullAll(@Query() payload: CourseAllDto) {
     return this.courseService.CoursefullAll(payload);
   }
@@ -34,49 +34,50 @@ export class CourseController {
     return this.courseService.CourseOne(req.user.id,id);
   }
 
+  @Roles(UserRole.ADMIN,UserRole.MENTOR,UserRole.ASSISTANT)
   @Get("full/one/:id")
-  @ApiOperation({ summary: "Bitta full course ni olish (barcha relationlar bilan)" })
+  @ApiOperation({ summary: "Bitta full course ni olish (barcha relationlar bilan) Admin Mentor Assistant" })
   courseFullOne(@Param("id") id: string) {
     return this.courseService.CoursefullOne(id);
   }
 
   @Get("my/:id")
   @Roles(UserRole.ADMIN,UserRole.MENTOR)
-  @ApiOperation({ summary: "Mentor o'zi yaratgan course ni olish" })
+  @ApiOperation({ summary: "Mentor o'zi yaratgan course ni olish  Admin Mentor "  })
   myCourse(@Req()req,@Param("id") id: string) {
     return this.courseService.myCourse(req.user.id,id);
   }
 
   @Get("mentor/:id")
   @Roles(UserRole.ADMIN,UserRole.MENTOR)
-  @ApiOperation({ summary: "Mentor yaratgan barcha course lar" })
+  @ApiOperation({ summary: "Mentor yaratgan barcha course lar  Admin Mentor " })
   coursesMentorAll(@Param("id") id: string, @Query() payload: CourseMentorAllDto) {
     return this.courseService.CoursesMentorAll(id, payload);
   }
 
   @Get("assigned/:id")
   @Roles(UserRole.ADMIN,UserRole.MENTOR)
-  @ApiOperation({ summary: "Assistant ga assign qilingan course lar" })
+  @ApiOperation({ summary: "Assistant ga assign qilingan course lar Admin Mentor " })
   assignedCourses(@Param("id") id: string, @Query() payload: CourseMentorAllDto) {
     return this.courseService.courses_assiged(id, payload);
   }
 
   @Get("assistant/:id")
   @Roles(UserRole.ADMIN,UserRole.MENTOR)
-  @ApiOperation({ summary: "Assistant biriktirilgan course ni olish" })
+  @ApiOperation({ summary: "Assistant biriktirilgan course ni olish Admin Mentor " })
   foundAssistant(@Param("id") id: string) {
     return this.courseService.foundAssistant(id);
   }
 
   @Post("assistant/add")
   @Roles(UserRole.ADMIN,UserRole.MENTOR)
-  @ApiOperation({ summary: "Assistant ni course ga biriktirish" })
+  @ApiOperation({ summary: "Assistant ni course ga biriktirish  Admin Mentor" })
   addAssistant(@Body() payload: AssistantAddCourse) {
     return this.courseService.add_Assistant(payload);
   }
 
   @Post("create")
-  @Roles(UserRole.ADMIN,UserRole.MENTOR)
+  @Roles(UserRole.ADMIN,UserRole.MENTOR )
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -178,28 +179,28 @@ export class CourseController {
 
   @Patch("publish/:id")
   @Roles(UserRole.ADMIN,UserRole.MENTOR)
-  @ApiOperation({ summary: "Course ni publish qilish" })
+  @ApiOperation({ summary: "Course ni publish qilish Admin Mentor " })
   coursePublish(@Param("id") id: string) {
     return this.courseService.CoursePublish(id);
   }
 
   @Patch("unpublish/:id")
   @Roles(UserRole.ADMIN,UserRole.MENTOR)
-  @ApiOperation({ summary: "Course ni unpublish qilish" })
+  @ApiOperation({ summary: "Course ni unpublish qilish Admin Mentor" })
   courseUnPublish(@Param("id") id: string) {
     return this.courseService.CourseunPublish(id);
   }
 
   @Patch("update-mentor-id/:id")
   @Roles(UserRole.ADMIN,UserRole.MENTOR)
-  @ApiOperation({ summary: "Course ga mentor biriktirish" })
+  @ApiOperation({ summary: "Course ga mentor biriktirish Admin Mentor" })
   courseUpdateMentor(@Param("id") id: string, @Query("mentor_id") mentor_id: string) {
     return this.courseService.CourseUpdateMentor(id, mentor_id);
   }
 
   @Delete(":id")
   @Roles(UserRole.ADMIN,UserRole.MENTOR)
-  @ApiOperation({ summary: "Course ni o'chirish" })
+  @ApiOperation({ summary: "Course ni o'chirish  Admin Mentor" })
   courseDelete(@Param("id") id: string) {
     return this.courseService.Coursedelete(id);
   }

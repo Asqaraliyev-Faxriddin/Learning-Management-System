@@ -17,7 +17,7 @@ export class LessonFileController {
 
   @Post("create")
   @Roles(UserRole.ADMIN,UserRole.MENTOR)
-  @ApiOperation({ summary: "Lesson fayl yaratish (admin uchun)" })
+  @ApiOperation({ summary: "Lesson fayl yaratish Admin,Mentor" })
   @ApiConsumes("multipart/form-data")
   @ApiBody({
     description: "Yangi LessonFile qo'shish",
@@ -34,21 +34,21 @@ export class LessonFileController {
 
   @Get(":id")
   @Roles(UserRole.ADMIN, UserRole.MENTOR)
-  @ApiOperation({ summary: "Lesson file olish (ID bo'yicha)" })
+  @ApiOperation({ summary: "Lesson file olish Admin,Mentor" })
   async getOne(@Param("id") id: string) {
     return this.lessonFileService.lessonfilesone(id);
   }
 
   @Get("lesson/:id")
   @Roles(UserRole.ADMIN, UserRole.MENTOR)
-  @ApiOperation({ summary: "Faqat lesson file (include yo'q)" })
+  @ApiOperation({ summary: "Faqat lesson file Admin,Mentor" })
   async getOnlyLessonFile(@Param("id") id: string) {
     return this.lessonFileService.Lesson(id);
   }
 
   @Get("all")
   @Roles(UserRole.ADMIN, UserRole.MENTOR)
-  @ApiOperation({ summary: "Barcha lesson filelar" })
+  @ApiOperation({ summary: "Barcha lesson filelar Admin,Mentor" })
   async LessonAll() {
     return this.lessonFileService.LessonAll();
   }

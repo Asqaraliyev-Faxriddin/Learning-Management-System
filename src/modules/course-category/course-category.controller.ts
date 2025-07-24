@@ -17,7 +17,7 @@ export class CourseCategoryController {
 
   @Get("all")
   @Roles(UserRole.ADMIN, UserRole.MENTOR, UserRole.ASSISTANT, UserRole.STUDENT)
-  @ApiOperation({ summary: "CourseCategory royxatini olish (filter bilan)" })
+  @ApiOperation({ summary: "CourseCategory royxatini olish (filter bilan) Admin Mentor Assistant" })
   @ApiQuery({ name: "offset", required: false, type: Number })
   @ApiQuery({ name: "limit", required: false, type: Number })
   @ApiQuery({ name: "name", required: false, type: String })

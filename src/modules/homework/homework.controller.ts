@@ -20,7 +20,7 @@ export class HomeworkController {
 
   @Post()
   @Roles(UserRole.ADMIN,UserRole.MENTOR,UserRole.ASSISTANT)
-  @ApiOperation({ summary: "Yangi homework yaratish (file bilan)" })
+  @ApiOperation({ summary: "Yangi homework yaratish (file bilan) Admin Mentor Assistant" })
   @ApiConsumes("multipart/form-data")
   @UseInterceptors(
     FileInterceptor("file", {
@@ -42,7 +42,7 @@ export class HomeworkController {
 
   @Patch("update/:id")
   @Roles(UserRole.ADMIN,UserRole.MENTOR,UserRole.ASSISTANT)
-  @ApiOperation({ summary: "Yangi homework yaratish (file bilan)" })
+  @ApiOperation({ summary: "Yangi homework yaratish (file bilan)  Admin Mentor Assistant" })
   @ApiConsumes("multipart/form-data")
   @UseInterceptors(
     FileInterceptor("file", {
@@ -63,7 +63,7 @@ export class HomeworkController {
 
   @Delete(":id") 
   @Roles(UserRole.ADMIN,UserRole.MENTOR,UserRole.ASSISTANT)
-  @ApiOperation({ summary: "Homeworkni o'chirish (file bilan)" })
+  @ApiOperation({ summary: "Homeworkni o'chirish (file bilan) Admin Mentor Assistant" })
   @ApiParam({ name: "id", type: Number })
   async deleteHomework(@Param("id") id: string) {
     return this.homeworkService.delete(id);
@@ -71,7 +71,7 @@ export class HomeworkController {
 
   @Get(":id")
   @Roles(UserRole.ADMIN,UserRole.MENTOR,UserRole.ASSISTANT)
-  @ApiOperation({ summary: "Bitta homework detailni olish" })
+  @ApiOperation({ summary: "Bitta homework detailni olish  Admin Mentor Assistant" })
   @ApiParam({ name: "id", type: Number })
   async getOne(@Param("id") id: string) {
     return this.homeworkService.detail(id);
@@ -79,7 +79,7 @@ export class HomeworkController {
 
   @Get("course/:id")
   @Roles(UserRole.ADMIN,UserRole.MENTOR,UserRole.ASSISTANT)
-  @ApiOperation({ summary: "Kurs boyicha barcha homeworklarni olish" })
+  @ApiOperation({ summary: "Kurs boyicha barcha homeworklarni olish  Admin Mentor Assistant" })
   @ApiParam({ name: "id", type: String, description: "Course ID" })
   async getByCourse(@Param("id") courseId: string) {
     return this.homeworkService.getByCourse(courseId);

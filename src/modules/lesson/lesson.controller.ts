@@ -38,7 +38,7 @@ export class LessonController {
 
   @Roles(UserRole.ADMIN, UserRole.MENTOR)
   @Post()
-  @ApiOperation({ summary: "Yangi dars yaratish (video fayl bilan)" })
+  @ApiOperation({ summary: "Yangi dars yaratish (video fayl bilan) Admin Mentor" })
   @ApiConsumes("multipart/form-data")
   @ApiBody({
     schema: {
@@ -60,7 +60,7 @@ export class LessonController {
 
   @Roles(UserRole.ADMIN, UserRole.MENTOR)
   @Put()
-  @ApiOperation({ summary: "Yangi dars yaratish (video fayl bilan)" })
+  @ApiOperation({ summary: "Yangi dars yaratish (video fayl bilan) Admin Mentor" })
   @ApiConsumes("multipart/form-data")
   @ApiBody({
     schema: {
@@ -83,7 +83,7 @@ export class LessonController {
 
   @Roles(UserRole.ADMIN, UserRole.MENTOR)
   @Delete(":id")
-  @ApiOperation({ summary: "Darsni o'chirish" })
+  @ApiOperation({ summary: "Darsni o'chirish Admin Mentor" })
   delete(@Param("id") id: string) {
     return this.lessonService.delete(id);
   }

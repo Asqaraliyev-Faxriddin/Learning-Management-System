@@ -19,7 +19,7 @@ export class PurchasedCoursesController {
 
   @Post('purchase')
   @Roles(UserRole.STUDENT)
-  @ApiOperation({ summary: 'STUDENT - Purchase a course' })
+  @ApiOperation({ summary: 'STUDENT ' })
   @ApiBody({ type: PurchasedCoursePaymentDto })
   @ApiResponse({ status: 201, description: 'Course successfully purchased' })
   async purchase(@Body() body: PurchasedCoursePaymentDto) {
@@ -28,20 +28,19 @@ export class PurchasedCoursesController {
 
   @Get('mine')
   @Roles(UserRole.STUDENT)
-  @ApiOperation({ summary: 'STUDENT - Get my purchased courses' })
+  @ApiOperation({ summary: 'STUDENT' })
   @ApiQuery({ name: 'offset', required: false })
   @ApiQuery({ name: 'limit', required: false })
   @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'category_id', required: false })
   @ApiQuery({ name: 'level', required: false })
-  @ApiResponse({ status: 200, description: 'List of purchased courses' })
   async getMine(@Query() query: PurchasedCourseAllDto) {
     return this.purchasedCoursesService.PurchasedCourseLevel(query);
   }
 
   @Get('mine/:course_id')
   @Roles(UserRole.STUDENT)
-  @ApiOperation({ summary: 'STUDENT - Get one purchased course by course ID' })
+  @ApiOperation({ summary: 'STUDENT ' })
   @ApiParam({ name: 'course_id', required: true })
   @ApiResponse({ status: 200,  description: 'Purchased course detail' })
   async getMyCourseById(@Param('course_id') courseId: string,@Req() req) {
@@ -62,7 +61,7 @@ export class PurchasedCoursesController {
 
   @Delete(':id')
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'ADMIN - Delete a purchased course by ID' })
+  @ApiOperation({ summary: 'ADMIN' })
   @ApiParam({ name: 'id', required: true })
   @ApiResponse({ status: 200, description: 'Purchased course deleted' })
   async deletePurchasedCourse(@Param('id') id: string) {

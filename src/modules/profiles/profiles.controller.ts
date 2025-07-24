@@ -79,7 +79,7 @@ export class ProfilesController {
 
   @Roles(UserRole.MENTOR)
   @Put("mentor-profile")
-  @ApiOperation({ summary: "Mentor profili ma'lumotlarini yangilash" })
+  @ApiOperation({ summary: "Mentor profili ma'lumotlarini yangilash mentor" })
   async updateMentorProfile(@Req() req: Request, @Body() body: any) {
     let user = req["user"];
     return this.profilesService.updateMentorProfile(user.id, body);
