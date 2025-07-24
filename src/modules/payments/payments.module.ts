@@ -8,7 +8,7 @@ import { JwtAccesToken } from 'src/common/config/jwt';
 @Module({
   imports: [
     CacheModule.register({
-      isGlobal: true, // yoki kerakli modul ichida local bo'lishi mumkin
+      isGlobal: true, 
     }),
 
     JwtModule.register(JwtAccesToken)

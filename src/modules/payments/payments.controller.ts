@@ -21,7 +21,6 @@ import { Roles } from 'src/common/decorators/Roles.decorator';
 import { UserRole, Users } from '@prisma/client'; 
 import { CreatePaymentDto } from './dto/create-payment.dto';
 
-// @ApiExcludeController(true)
 @ApiTags('Payment')
 @Controller()
 export class PaymentsController {
