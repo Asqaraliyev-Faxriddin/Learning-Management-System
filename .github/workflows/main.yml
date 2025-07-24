@@ -26,7 +26,8 @@ jobs:
 
             if [ ! -d .git ]; then
               echo "Cloning repository"
-              git clone https://github.com/Asqaraliyev-Faxriddin/Learning-Management-System.git .
+             git clone https://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@github.com/Asqaraliyev-Faxriddin/Learning-Management-System.git.
+
             else
               echo "Pulling latest"
               git pull origin main 
