@@ -18,6 +18,7 @@ import { ProfilesModule } from './modules/profiles/profiles.module';
 import { VerificationModule } from './modules/verification/verification.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { PaymentsModule } from './modules/payments/payments.module';
 
 @Module({
   imports: [
@@ -42,7 +43,7 @@ import { join } from 'path';
     ProfilesModule,CourseModule,CourseCategoryModule,PurchasedCourseModule,LessonModule, 
     LessonBolimModule, LessonFileModule,
     RatingModule,ExamModule,HomeworkModule,
-    QuestionAnswerModule, SeaderModule,RedisModule, 
+    QuestionAnswerModule,PaymentsModule ,SeaderModule,RedisModule, 
 
     
   ],

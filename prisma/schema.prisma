@@ -341,3 +341,19 @@ model Contact {
   message   String
   createdAt DateTime @default(now())
 }
+
+
+model Transaction {
+  id           String   @id @default(uuid())
+  transaction  String   @unique
+  state        Int
+  pid String @unique
+  reason       Int?
+  userId       String
+  courseId     String
+  performTime  DateTime?
+  cancelTime   DateTime?
+  amount Decimal
+  createTime DateTime
+  createdAt    DateTime @default(now())
+}
