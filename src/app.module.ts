@@ -41,6 +41,10 @@ import { join } from 'path';
     {
       rootPath: join(process.cwd(), 'uploads/profile'), 
       serveRoot: '/profile/url', 
+    },
+    {
+      rootPath: join(process.cwd(), 'uploads/homework-check'), 
+      serveRoot: '/homework/url', 
     }
   ), 
 
