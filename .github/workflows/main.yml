@@ -1,51 +1,51 @@
-name: Deploy boldi
+# name: Deploy boldi
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
 
-      - name: Deploy over SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.DB_HOST }}
-          username: ${{ secrets.DB_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            echo "Creating project folder if it doesn't exist"
-            mkdir -p /home/ubuntu/loyiha
-            cd /home/ubuntu/loyiha
+#       - name: Deploy over SSH
+#         uses: appleboy/ssh-action@v1.0.3
+#         with:
+#           host: ${{ secrets.DB_HOST }}
+#           username: ${{ secrets.DB_USER }}
+#           key: ${{ secrets.SSH_KEY }}
+#           script: |
+#             echo "Creating project folder if it doesn't exist"
+#             mkdir -p /home/ubuntu/loyiha
+#             cd /home/ubuntu/loyiha
 
-            if [ ! -d .git ]; then
-              echo "Cloning repository"
-              git clone https://github.com/Asqaraliyev-Faxriddin/Learning-Management-System.git .
-            else
-              echo "Pulling latest changes"
-              git pull origin main
-            fi
+#             if [ ! -d .git ]; then
+#               echo "Cloning repository"
+#               git clone https://github.com/Asqaraliyev-Faxriddin/Learning-Management-System.git .
+#             else
+#               echo "Pulling latest changes"
+#               git pull origin main
+#             fi
 
-            echo "Installing dependencies"
-            npm install
+#             echo "Installing dependencies"
+#             npm install
 
-            echo "Generating Prisma client"
-            npx prisma generate
+#             echo "Generating Prisma client"
+#             npx prisma generate
 
-            echo "Running migrations"
-            npx prisma migrate deploy
+#             echo "Running migrations"
+#             npx prisma migrate deploy
 
-            echo "Stopping running containers"
-            docker compose down
+#             echo "Stopping running containers"
+#             docker compose down
 
-            echo "Building containers"
-            docker compose build
+#             echo "Building containers"
+#             docker compose build
 
-            echo "Starting containers"
-            docker compose up -d
+#             echo "Starting containers"
+#             docker compose up -d

@@ -6,10 +6,12 @@ import { JwtAccesToken } from 'src/common/config/jwt';
 import { AuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { FileService } from './file/file.service';
 import { FileController } from './file/file.controller';
+import { ContactController } from './contact/contact.controller';
+import { ContactService } from './contact/contact.service';
 
 @Module({
   imports:[JwtModule.register(JwtAccesToken)],
-  controllers: [QuestionAnswerController, FileController],
-  providers: [QuestionAnswerService,AuthGuard, FileService],
+  controllers: [QuestionAnswerController, FileController,ContactController],
+  providers: [QuestionAnswerService,AuthGuard, FileService,ContactService],
 })
 export class QuestionAnswerModule {}

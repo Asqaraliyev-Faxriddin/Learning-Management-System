@@ -332,3 +332,12 @@ model QuestionAnswer {
   @@map("questionsanswer")
 }
 
+
+
+model Contact {
+  id        String   @id @default(uuid())
+  fullName  String
+  phone     String
+  message   String
+  createdAt DateTime @default(now())
+}

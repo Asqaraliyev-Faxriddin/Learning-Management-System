@@ -22,10 +22,7 @@ import { join } from 'path';
 @Module({
   imports: [
 
-    ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'uploads/lesson'), 
-      serveRoot: '/video/url', 
-    },
+    ServeStaticModule.forRoot(
     {
       rootPath: join(process.cwd(), 'uploads/banner'), 
       serveRoot: '/banner/url', 
@@ -35,16 +32,8 @@ import { join } from 'path';
       serveRoot: '/introvideo/url', 
     },
     {
-      rootPath: join(process.cwd(), 'uploads/homework'), 
-      serveRoot: '/homework/url', 
-    },
-    {
       rootPath: join(process.cwd(), 'uploads/profile'), 
       serveRoot: '/profile/url', 
-    },
-    {
-      rootPath: join(process.cwd(), 'uploads/homework-check'), 
-      serveRoot: '/homework/url', 
     }
   ), 
 

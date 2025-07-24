@@ -121,8 +121,8 @@ export class HomeworkController {
 
   @Get('submissions/all')
   @Roles(UserRole.ADMIN, UserRole.MENTOR, UserRole.ASSISTANT)
-  @ApiOperation({ summary: 'Get all homework submissions (with filters)' })
-  async getAllSubmissions(@Query() query: HomeworksAllSubmissons) {
+  @ApiOperation({ summary: 'Get all homework submissions ' })
+  async getAllSubmissions(@Query() query: Partial<HomeworksAllSubmissons>) {
     return this.homeworkService.HomeworksubmissionAll(query);
   }
 
