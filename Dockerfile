@@ -12,6 +12,7 @@ COPY . .
 
 
 RUN npm run build 
+RUN npx prisma migrate
 
 EXPOSE 3000
 
