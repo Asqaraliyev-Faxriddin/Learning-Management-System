@@ -5,7 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { TelegramInterceptor } from './common/interceptors/bot.intervertors';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule,{cors:true});
 
   app.enableCors()
   
