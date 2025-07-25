@@ -4,7 +4,6 @@ import { ProfileUpdateDto, PhoneUpdateDto, LastActivityDto, UpdatePasswordDto } 
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { AuthGuard } from "src/common/guards/jwt-auth.guard";
-import { UpdatePhoneInterceptor } from "src/common/interceptors/last-activity";
 import { UserRole } from "@prisma/client";
 import { Roles } from "src/common/decorators/Roles.decorator";
 import { RolesGuard } from "src/common/guards/roles.guard";
@@ -62,7 +61,6 @@ export class ProfilesController {
   }
 
   @Post("phone/update")
-  @UseInterceptors(UpdatePhoneInterceptor)
   @ApiOperation({ summary: "Telefon raqamni yangilash (OTP tekshiruv bilan)" })
   async updatePhone(@Req() req: Request,@Body() body: PhoneUpdateDto,) {
     let user = req["user"];

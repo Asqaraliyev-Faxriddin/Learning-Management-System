@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import {Body,Controller,Get,Post,Req,Res,UseGuards,} from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { PaymeRequest } from 'src/common/types/payments/payme'; 
 import {
