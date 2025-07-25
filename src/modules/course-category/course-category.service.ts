@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException,ConflictException } from '@nestjs/common';
 import { PrismaService } from 'src/core/prisma/prisma.service';
 import { CourseCategoryAllDto, CourseCategoryCreateDto } from './dto/create-course-category.dto';
 
@@ -51,6 +51,13 @@ export class CourseCategoryService {
   async CourseCategoryCreate(payload:CourseCategoryCreateDto){
 
     let {name} = payload
+    let oldc = await this.prisma.courseCategory.findFirst({
+      where:{
+        name:payload.name
+      }
+    })
+
+    if(oldc) throw new ConflictException("Category name already")
 
     let data = await this.prisma.courseCategory.create({
       data:{name},
