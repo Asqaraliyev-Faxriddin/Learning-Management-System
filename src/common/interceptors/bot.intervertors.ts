@@ -16,7 +16,6 @@ import { EmptyError } from 'rxjs';
       let method = request.method;
       let url = request.url;
       let ip = request.ip;
-      let body = request.body;
       let user = request.user;
   
       let allowedRoles = ['ADMIN', 'MENTOR', 'ASSISTANT'];
