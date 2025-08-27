@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Tasdiqlash kodi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    .container {
+      max-width: 480px;
+      margin: 30px auto;
+      background: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #0d6efd, #4f46e5);
+      padding: 20px;
+      text-align: center;
+      color: #ffffff;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+    .content {
+      padding: 30px 20px;
+      text-align: center;
+    }
+    .content p {
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    .otp {
+      display: inline-block;
+      background: #f0f0ff;
+      border: 2px dashed #0d6efd;
+      color: #0d6efd;
+      font-size: 32px;
+      font-weight: bold;
+      padding: 15px 25px;
+      border-radius: 8px;
+      letter-spacing: 4px;
+      margin-bottom: 20px;
+    }
+    .footer {
+      padding: 15px;
+      font-size: 12px;
+      color: #777;
+      text-align: center;
+      border-top: 1px solid #eee;
+    }
+    @media (max-width: 500px) {
+      .content { padding: 20px 15px; }
+      .otp { font-size: 28px; padding: 12px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Tasdiqlash kodi</h1>
+    </div>
+    <div class="content">
+      <p>Salom! Quyidagi kod orqali tasdiqlang:</p>
+      <div class="otp">{{code}}</div>
+      <p>Bu kod 5 daqiqadan so'ng o'z kuchini yo'qotadi.</p>
+    </div>
+    <div class="footer">
+      Agar bu kodni siz so'ramagan bo'lsangiz, ushbu xatni e’tiborsiz qoldiring.
+    </div>
+  </div>
+</body>
+</html>
