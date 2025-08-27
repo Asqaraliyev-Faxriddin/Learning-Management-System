@@ -8,103 +8,76 @@ import * as path from "path"
 @Injectable()
 export class CourseService {
   constructor(private prisma:PrismaService){}
+  async CourseAll(payload: CourseAllDto) {
+    let {
+      offset = 1,
+      limit = 10,
+      search,
+      level,
+      category_id,
+      mentor_id,
+      price_min,
+      price_max
+    } = payload;
   
-  async CourseAll(payload:CourseAllDto){
-
-    let {offset=1,limit=10,search,level,category_id,mentor_id,price_min,price_max} = payload
+    // Ensure offset >= 1
+    offset = Math.max(1, Number(offset));
+    limit = Math.max(1, Number(limit));
   
-    if(mentor_id){
-      let oldmentor = await this.prisma.users.findFirst({
-        where:{id:mentor_id}
-      })
-
-      if(!oldmentor) throw new NotFoundException("Mentor not found")
+    if (mentor_id) {
+      const oldMentor = await this.prisma.users.findFirst({ where: { id: mentor_id } });
+      if (!oldMentor) throw new NotFoundException("Mentor not found");
     }
-
-    if(category_id){
-      let oldmentor = await this.prisma.courseCategory.findFirst({
-        where:{id:category_id}
-      })
-
-      if(!oldmentor) throw new NotFoundException("Category not found")
+  
+    if (category_id) {
+      const oldCategory = await this.prisma.courseCategory.findFirst({ where: { id: category_id } });
+      if (!oldCategory) throw new NotFoundException("Category not found");
     }
-
-
-    let filter:any = []
-    if(search){
-    filter.push({
-      Cursecategory: {
-        is: {
-          name: {
-            contains: search,
-            mode: 'insensitive'
+  
+    let filter: any = [];
+  
+    if (search) {
+      filter.push({
+        Cursecategory: {
+          is: {
+            name: {
+              contains: search,
+              mode: "insensitive"
+            }
           }
         }
-      }
-    })
-  }
-    if(level){
-      filter.push({
-        level:level
-      })
+      });
     }
-
-    if(category_id){
-      filter.push({
-        category_id:category_id
-      })
-    }
-
-
-    if(mentor_id){
-      filter.push({
-        mentor_id: mentor_id
-      })
-    }
-
-    
+  
+    if (level) filter.push({ level });
+    if (category_id) filter.push({ category_id });
+    if (mentor_id) filter.push({ mentor_id });
+  
     if (price_min && price_max) {
-      filter.push({
-        price: {
-          gte: Number(price_min),
-          lte: Number(price_max)
-        }
-      });
+      filter.push({ price: { gte: Number(price_min), lte: Number(price_max) } });
     } else if (price_min) {
-      filter.push({
-        price: {
-          gte: Number(price_min)
-        }
-      });
+      filter.push({ price: { gte: Number(price_min) } });
     } else if (price_max) {
-      filter.push({
-        price: {
-          lte: Number(price_max)
-        }
-      });
+      filter.push({ price: { lte: Number(price_max) } });
     }
-    
-    let wherefilter:any = {published:true  }
-    if(filter.length){
-      wherefilter.AND = filter
-    }
-
-    let data = await this.prisma.course.findMany({
+  
+    let wherefilter: any = { published: true };
+    if (filter.length) wherefilter.AND = filter;
+  
+    const data = await this.prisma.course.findMany({
       where: wherefilter,
-      include: {
-        Cursecategory: true,
-        mentor: true
-      },
-        
-  
+      include: { Cursecategory: true, mentor: true },
       take: limit,
-      skip: (offset - 1) * limit
-    })
-
-    return { succase:true,
-      message:"Succase  course all",data}
+      skip: (offset - 1) * limit  // ✅ offset >= 1 bo'lgani uchun manfiy bo‘lmaydi
+    });
   
+    return {
+      succase: true,
+      message: "Succase course all",
+      data
+    };
   }
+  
 
   
 
@@ -134,7 +107,7 @@ export class CourseService {
   }
 
 
-  
+    
 
   async CoursefullOne(id:string){
 
@@ -145,6 +118,7 @@ export class CourseService {
       include:{
         questions:true,
         assignedCourses:true,
+      
         Cursecategory:true,
         lessonBolimlar:true,
         lastActivities:true,

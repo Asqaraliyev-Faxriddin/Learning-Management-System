@@ -43,7 +43,7 @@ enum ExamAnswer {
 model Users {
   id               String               @id @default(uuid())
   phone            String               @unique
-  password         String
+  password         String 
   role             UserRole             @default(STUDENT)
   fullName         String
   image            String?
@@ -82,6 +82,16 @@ model MentorProfile {
   @@map("mentorprofiles")
 }
 
+model CourseCategory {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  courses   Course[]
+
+  @@map("coursecategory")
+}
+
 model Course {
   id               String           @id @default(uuid())
   name             String
@@ -89,14 +99,13 @@ model Course {
   price            Decimal
   banner           String
   introVideo       String?
-  level            CourseLevel
+  level            CourseLevel 
   published        Boolean          @default(false)
   cursecategoryId  String
   mentorId         String
   updatedAt        DateTime?
   createdAt        DateTime         @default(now())
-
-  Cursecategory    Cursecategory    @relation(fields: [cursecategoryId], references: [id], onDelete: Cascade)
+  Cursecategory    CourseCategory   @relation(fields: [cursecategoryId], references: [id], onDelete: Cascade)
   mentor           Users            @relation("MentorCourses", fields: [mentorId], references: [id], onDelete: Cascade)
   assignedCourses  AssignedCourse[]
   purchasedCourses PurchasedCourse[]
@@ -111,19 +120,19 @@ model Course {
 
 model AssignedCourse {
   id        String   @id @default(uuid())
-  userId    String
+  userId    String 
   courseId  String
   createdAt DateTime @default(now())
 
   user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade) 
 
   @@map("assigncourses")
 }
 
 model PurchasedCourse {
   id          String   @id @default(uuid())
-  courseId    String
+  courseId    String  
   userId      String
   amount      Decimal?
   paidVia     PaidVia
@@ -144,7 +153,7 @@ model Rating {
   createdAt DateTime @default(now())
 
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  user   Users  @relation(fields: [userId], references: [id])
+  user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("rating")
 }
@@ -159,9 +168,9 @@ model LastActivity {
   updatedAt  DateTime @default(now())
 
   user       Users        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course     Course?      @relation(fields: [courseId], references: [id])
-  Bolim      LessonBolim? @relation(fields: [groupId], references: [id])
-  lesson     Lesson?      @relation(fields: [lessonId], references: [id])
+  course     Course?      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  Bolim      LessonBolim? @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  lesson     Lesson?      @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@map("lastactivity")
 }
@@ -172,7 +181,7 @@ model LessonBolim {
   courseId     String
   createdAt    DateTime      @default(now())
 
-  course       Course         @relation(fields: [courseId], references: [id])
+  course       Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
   lessons      Lesson[]
   activities   LastActivity[]
   exams        Exam[]
@@ -191,8 +200,8 @@ model Lesson {
   updatedAt      DateTime?
   createdAt      DateTime         @default(now())
 
-  Bolim          LessonBolim      @relation(fields: [bolimId], references: [id])
-  course         Course           @relation(fields: [courseId], references: [id])
+  Bolim          LessonBolim      @relation(fields: [bolimId], references: [id], onDelete: Cascade)
+  course         Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
   lessonFiles    LessonFile[]
   homework       Homework?
   views          LessonView[]
@@ -202,7 +211,7 @@ model Lesson {
 }
 
 model LessonView {
-  id      String  @id @default(uuid())
+  id      String @id @default(uuid())
   lessonId String
   userId   String
   view     Boolean
@@ -230,7 +239,7 @@ model Homework {
   task        String
   file        String?
   lessonId    String   @unique
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime @updatedAt()
   createdAt   DateTime @default(now())
 
   lesson      Lesson             @relation(fields: [lessonId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -247,7 +256,7 @@ model HomeworkSubmission {
   status     HomeworkSubStatus @default(PENDING)
   homeworkId String
   userId     String
-  updatedAt  DateTime @updatedAt
+  updatedAt  DateTime @updatedAt()
   createdAt  DateTime @default(now())
 
   homework Homework @relation(fields: [homeworkId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -311,7 +320,7 @@ model QuestionAnswer {
   userId     String
   text       String
   file       String?
-  updatedAt  DateTime @updatedAt
+  updatedAt  DateTime @updatedAt()
   createdAt  DateTime @default(now())
 
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
@@ -341,10 +350,4 @@ model Transaction {
   amount       Decimal
   createTime   DateTime
   createdAt    DateTime @default(now())
-}
-
-model Cursecategory {
-  id   String @id @default(uuid()) 
-  name String
-  Courses Course[]
 }
