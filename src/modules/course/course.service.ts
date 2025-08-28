@@ -312,7 +312,7 @@ export class CourseService {
 
     if(category_id){
       filter.push({
-        category_id:category_id
+        cursecategoryId:category_id
       })
     }
 

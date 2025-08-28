@@ -9,7 +9,6 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @ApiTags('Contact')
 @Controller('api/contact')
-@UseGuards(AuthGuard,RolesGuard)
 export class ContactController {
   constructor(private contactService: ContactService) {}
 
