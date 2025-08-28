@@ -50,7 +50,7 @@ export class CourseService {
     }
   
     if (level) filter.push({ level });
-    if (category_id) filter.push({ category_id });
+    if (category_id) filter.push({ cursecategoryId:category_id });
     if (mentor_id) filter.push({ mentor_id });
   
     if (price_min && price_max) {
@@ -62,7 +62,7 @@ export class CourseService {
     }
   
     let wherefilter: any = { published: true };
-    if (filter.length) wherefilter.AND = filter;
+    if (filter.length) wherefilter.OR = filter;
   
     const data = await this.prisma.course.findMany({
       where: wherefilter,
@@ -176,7 +176,7 @@ export class CourseService {
 
     if(category_id){
       filter.push({
-        category_id:category_id
+        cursecategoryId:category_id
       })
     }
 
