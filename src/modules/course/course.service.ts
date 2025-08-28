@@ -328,7 +328,7 @@ export class CourseService {
     } else if (price_min) {
       filter.push({
         price: {
-          gte: Number(price_min)
+          gte: Number(price_min)  
         }
       });
     } else if (price_max) {
