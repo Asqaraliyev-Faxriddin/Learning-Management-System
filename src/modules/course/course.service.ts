@@ -19,8 +19,7 @@ export class CourseService {
       price_min,
       price_max
     } = payload;
-  
-    // Ensure offset >= 1
+
     offset = Math.max(1, Number(offset));
     limit = Math.max(1, Number(limit));
   
@@ -51,7 +50,7 @@ export class CourseService {
   
     if (level) filter.push({ level });
     if (category_id) filter.push({ cursecategoryId:category_id });
-    if (mentor_id) filter.push({ mentor_id });
+    if (mentor_id) filter.push({mentorId:mentor_id });
   
     if (price_min && price_max) {
       filter.push({ price: { gte: Number(price_min), lte: Number(price_max) } });
@@ -183,7 +182,7 @@ export class CourseService {
 
     if(mentor_id){
       filter.push({
-        mentor_id: mentor_id
+        mentorId: mentor_id
       })
     }
 

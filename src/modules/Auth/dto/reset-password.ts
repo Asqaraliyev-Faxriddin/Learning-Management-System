@@ -13,11 +13,10 @@ export class Reset_Password {
     phone: string;
 
     @ApiProperty({
-        example: 123456,
+        example: "123456",
         description: "Telefon raqamga yuborilgan 6 xonali OTP raqam",
     })
     @IsNotEmpty()
-    @IsNumber()
     otp: string;
 
     @ApiProperty({
