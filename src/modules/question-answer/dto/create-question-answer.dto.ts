@@ -1,38 +1,35 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import { Type } from "class-transformer"
-import { IsBoolean, IsNumber, IsOptional, IsString, IsUUID } from "class-validator"
+import { IsBoolean, IsIn, IsNumber, IsOptional, IsString, IsUUID } from "class-validator"
 
-export class QuestionsMine{
+export class QuestionsMine {
+  @IsOptional()
+  @ApiPropertyOptional()
+  @Type(() => Number)
+  @IsNumber()
+  offset: number;
 
-    @IsBoolean()
-    @IsOptional()
-    @ApiPropertyOptional()
-    offset:number
+  @IsOptional()
+  @ApiPropertyOptional()
+  @Type(() => Number)
+  @IsNumber()
+  limit: number;
 
-    @IsNumber()
-    @Type(() => Number)
-    @IsOptional()
-    @ApiPropertyOptional()
-    limit:number
+  @IsOptional()
+  @ApiPropertyOptional({ enum: [true, false] })
+  @IsIn([true, false, 'true', 'false'])
+  read: boolean | string;
 
-    
-    @IsBoolean()
-    @IsOptional()
-    @ApiPropertyOptional()
-    read:boolean
+  @IsOptional()
+  @ApiPropertyOptional({ enum: [true, false] })
+  @IsIn([true, false, 'true', 'false'])
+  answered: boolean | string;
 
-    @IsBoolean()
-    @IsOptional()
-    @ApiPropertyOptional()
-    answered:boolean
-
-    @IsString()
-    @IsOptional()
-    @ApiPropertyOptional()
-    course_id:string
+  @IsOptional()
+  @ApiPropertyOptional()
+  @IsString()
+  course_id: string;
 }
-
-
 
 
 export class QuestionsCreate {

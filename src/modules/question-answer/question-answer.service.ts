@@ -16,7 +16,7 @@ export class QuestionAnswerService {
 
     if(course_id){
       filter.push({
-        course_id
+        courseId:course_id
       })
     }
 
@@ -53,49 +53,39 @@ export class QuestionAnswerService {
   }
 
 
-  async QuestionsAllMineCourse(userId:string,payload:QuestionsMine){
-    let {course_id,answered,read,limit=10,offset=1} = payload
+  async QuestionsAllMineCourse(userId: string, payload: QuestionsMine) {
+    let { course_id, answered, read, limit = 10, offset = 1 } = payload;
 
-    let filter:any = []
+    console.log(read);
+    
 
-    if(course_id){
-      filter.push({
-        course_id
-      })
-    }
-
-    if(answered){
-      filter.push({
-        answered
-      })
-    }
-
-    if(read){
-      filter.push({
-        read
-      })
-    }
-
-
-    let wherefilter:any = {}
-
-    if(filter.length){
-      wherefilter.OR = filter
-    }
-
-    let data = await this.prisma.question.findMany({
-      where:wherefilter,
-      include:{
-        course:true,
-        user:true
-      }
-    })
-
-    if(!data) throw new NotFoundException("Questions not found")
-
-      return data
+    if (read === "true") read = true;
+    else if (read === "false") read = false;
+    
+    if (answered === "true") answered = true;
+    else if (answered === "false") answered = false;
+    
+    const filter: any[] = [{ userId }];
+  
+    if (course_id) filter.push({ courseId: course_id });
+    if (answered !== undefined) filter.push({ answered });
+    if (read !== undefined) filter.push({ read });
+  
+    const wherefilter: any = filter.length ? { AND: filter } : {};
+  
+    const data = await this.prisma.question.findMany({
+      where: wherefilter,
+      include: { course: true, user: true },
+      skip: (offset - 1) * limit,
+      take: limit,
+      orderBy: { createdAt: "desc" }
+    });
+  
+    if (!data || data.length === 0) throw new NotFoundException("Questions not found");
+  
+    return data;
   }
-
+  
 
 
   async QuestionsOneCourse(userId:string,courseId:string){
@@ -119,9 +109,18 @@ export class QuestionAnswerService {
 
 
 
-  async QuestionsViewOne(userId:string,question_id:string){
+  async QuestionsViewOne(question_id:string){
    
-    
+      console.log("errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",question_id);
+      
+    let olfu = await this.prisma.question.findFirst({
+      where:{
+        id:question_id
+      }
+    })
+
+    if(!olfu) throw new NotFoundException()
+
 
     let data = await this.prisma.question.update({
       where:{

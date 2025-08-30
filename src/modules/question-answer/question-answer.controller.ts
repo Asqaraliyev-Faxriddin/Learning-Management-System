@@ -33,15 +33,17 @@ export class QuestionAnswerController {
   @Get("view/:id")
   @ApiOperation({ summary: "Bitta savolni ko'rish va read=true qilish" })
   async viewQuestion(@Param("id") questionId: string, @Req() req) {
-    return this.questionAnswerService.QuestionsViewOne(req.user.id, questionId);
+    return this.questionAnswerService.QuestionsViewOne(questionId);
   }
 
 
-  @Post("read")
+  @Post("read/:id")
   @Roles(UserRole.ADMIN,UserRole.MENTOR,UserRole.ASSISTANT)
   @ApiOperation({summary:"Mentor ,Admin ,Assistant"})
   async Read(@Req() req,@Param("questionId") questionId:string){
-    return this.questionAnswerService.QuestionsViewOne(req.user.id,questionId)
+    
+    return  this.questionAnswerService.QuestionsViewOne(questionId)
+   
   }
 
 
