@@ -6,46 +6,54 @@ import { CourseCategoryAllDto, CourseCategoryCreateDto } from './dto/create-cour
 export class CourseCategoryService {
   constructor(private prisma:PrismaService){}
 
-  async CourseCategory(payload:CourseCategoryAllDto){
-
-    let {offset=1,limit=10,name} = payload
-    
-    if(Number(offset)==0){
-      offset=1
+  async CourseCategory(payload: CourseCategoryAllDto) {
+    let { offset = 1, limit = 10, name } = payload;
+  
+    if (Number(offset) <= 0) {
+      offset = 1;
     }
-
-    let filter:any = []
-    
-    if(name){
+  
+    let filter: any = [];
+  
+    if (name) {
       filter.push({
-        name:{
-          contains:name,
-          mode:"insensitive"
-        }
-      })
+        name: {
+          contains: name,
+          mode: "insensitive",
+        },
+      });
     }
- 
-    let whereFilter:any = {}
-    if(filter.length){
-      whereFilter.OR = filter
+  
+    let whereFilter: any = {};
+    if (filter.length) {
+      whereFilter.OR = filter;
     }
-
-    let data = await this.prisma.courseCategory.findMany({
-      where:whereFilter,
-      include:{
-        courses:true,
-        
+  
+    // ✅ umumiy sonini olish
+    const total = await this.prisma.courseCategory.count({
+      where: whereFilter,
+    });
+  
+    // ✅ paginated data olish
+    const data = await this.prisma.courseCategory.findMany({
+      where: whereFilter,
+      include: {
+        courses: true,
       },
-      take:limit,
-      skip:(offset-1)*limit,
-      orderBy:{
-        createdAt:"asc"
-      }
-
-    })
- 
-    return data
+      take: limit,
+      skip: (offset - 1) * limit,
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+  
+    // ✅ ikkisini qaytaramiz
+    return {
+      data,
+      total,
+    };
   }
+  
 
 
   async CourseCategoryCreate(payload:CourseCategoryCreateDto){
