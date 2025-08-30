@@ -72,7 +72,7 @@ export class PurchasedCoursePaymentDto {
 
     @ApiProperty({example:"+998903213435"})
     @IsString()
-    @IsPhoneNumber("UZ")Len
+    @IsPhoneNumber("UZ")
     @IsNotEmpty()
     phone:string
 }

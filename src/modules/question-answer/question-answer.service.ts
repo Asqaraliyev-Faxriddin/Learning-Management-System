@@ -64,7 +64,7 @@ export class QuestionAnswerService {
     
     if (answered === "true") answered = true;
     else if (answered === "false") answered = false;
-    
+      
     const filter: any[] = [{ userId }];
   
     if (course_id) filter.push({ courseId: course_id });
