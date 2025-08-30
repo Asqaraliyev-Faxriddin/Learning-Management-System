@@ -10,6 +10,7 @@ import { RolesGuard } from "src/common/guards/roles.guard";
 import { diskStorage } from "multer";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { extname } from "path";
+import { UpdateMentorProfileDto } from "./dto/update-profile.dto";
 
 @ApiTags("Profiles")
 @ApiBearerAuth()
@@ -77,9 +78,12 @@ export class ProfilesController {
 
   @Roles(UserRole.MENTOR)
   @Put("mentor-profile")
-  @ApiOperation({ summary: "Mentor profili ma'lumotlarini yangilash mentor" })
-  async updateMentorProfile(@Req() req: Request, @Body() body: any) {
-    let user = req["user"];
-    return this.profilesService.updateMentorProfile(user.id, body);
+  @ApiOperation({ summary: "Mentor profili ma'lumotlarini yangilash (mentor)" })
+  async updateMentorProfile(
+    @Req() req: Request,
+    @Body() body: UpdateMentorProfileDto
+  ) {
+    const user = req["user"];
+    return await this.profilesService.updateMentorProfile(user.id, body);
   }
 }

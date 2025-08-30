@@ -6,6 +6,7 @@
   import * as bcrypt from "bcrypt"
 import * as fs from 'fs';
 import * as path from 'path';
+import { UpdateMentorProfileDto } from './dto/update-profile.dto';
 
   @Injectable()
   export class ProfilesService {
@@ -188,23 +189,24 @@ import * as path from 'path';
           user: updatedUser,
         };
       }
-      async updateMentorProfile(userId: string, body: any) {
+      async updateMentorProfile(userId: string, dto: UpdateMentorProfileDto) {
         const isMentor = await this.prisma.mentorProfile.findUnique({
           where: { userId },
         });
-    
+      
         if (!isMentor) {
-          return this.prisma.mentorProfile.create({
+          return await this.prisma.mentorProfile.create({
             data: {
               userId,
-              ...body,
+              ...dto,
             },
           });
         }
-    
-        return this.prisma.mentorProfile.update({
+      
+        return await this.prisma.mentorProfile.update({
           where: { userId },
-          data: body,
+          data: dto,
         });
       }
+      
   }
