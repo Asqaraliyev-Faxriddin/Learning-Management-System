@@ -160,7 +160,7 @@ export class QuestionAnswerService {
       readAt: new Date(),
     };
   
-    if (filename) {
+    if (filename != undefined) {
       dataObj.file = filename;
     }
   
@@ -223,7 +223,7 @@ async createAnswer(userId: string, payload: createAnswerQuestions, filename?: st
     text,
   };
 
-  if (filename) {
+  if (filename != undefined) {
     data.file = filename;
   }
 

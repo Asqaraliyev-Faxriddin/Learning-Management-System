@@ -55,7 +55,7 @@ export class QuestionAnswerController {
     schema: {
       type: "object",
       properties: {
-        file: { type: "string", format: "binary"},
+        file: { type: "string", format: "binary" },
         courseId: { type: "string" },
         task: { type: "string" },
       },
@@ -67,9 +67,15 @@ export class QuestionAnswerController {
     @Body() payload: QuestionsCreate,
     @Req() req,
   ) {
-    let filename =file.filename
-    return this.questionAnswerService.QuestoinsCreate(req.user.id, payload, filename);
+    const filename = file ? file.filename : null;
+  
+    return this.questionAnswerService.QuestoinsCreate(
+      req.user.id,
+      payload,
+      filename!,
+    );
   }
+  
 
   @Patch("update")
   @Roles(UserRole.ADMIN, UserRole.MENTOR, UserRole.STUDENT)
