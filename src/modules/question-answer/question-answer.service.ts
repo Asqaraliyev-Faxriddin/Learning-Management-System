@@ -56,8 +56,10 @@ export class QuestionAnswerService {
   async QuestionsAllMineCourse(userId: string, payload: QuestionsMine) {
     let { course_id, answered, read, limit = 10, offset = 1 } = payload;
 
-    console.log(read);
+  
+    console.log("efffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",course_id);
     
+
 
     if (read === "true") read = true;
     else if (read === "false") read = false;
@@ -80,7 +82,7 @@ export class QuestionAnswerService {
       take: limit,
       orderBy: { createdAt: "desc" }
     });
-    console.log("feefef",data);
+
     
   
     if (!data || data.length === 0) throw new NotFoundException("Questions not found");
