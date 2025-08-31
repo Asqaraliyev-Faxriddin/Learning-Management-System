@@ -21,7 +21,7 @@ export class QuestionAnswerController {
     return this.questionAnswerService.QuestionsAllMine(req.user.id, query);
   }
 
-  @Get("course/:courseId")
+  @Get("course")
   @ApiOperation({ summary: "Kursga tegishli savollar" })
   async getQuestionsByCourse(
     @Query() query: QuestionsMine,
