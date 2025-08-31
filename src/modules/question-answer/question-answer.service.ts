@@ -64,7 +64,7 @@ export class QuestionAnswerService {
     
     if (answered === "true") answered = true;
     else if (answered === "false") answered = false;
-      
+
     const filter: any[] = [{ userId }];
   
     if (course_id) filter.push({ courseId: course_id });
@@ -142,36 +142,41 @@ export class QuestionAnswerService {
   }
 
 
-  async QuestoinsCreate(userId:string,payload:QuestionsCreate,filename:string){
-    let {courseId,task} = payload
-
-    let oldcourse = await this.prisma.course.findFirst({
-      where:{
-        id:courseId
-      }
-    })
-
-    if(!oldcourse) throw new NotFoundException("Course not found")
-
-    let data = await this.prisma.question.create({
-      data:{
-        text:task,
-        file:filename,
-        userId,
-        courseId,
-        read:false,
-        readAt:new Date()
+  async QuestoinsCreate(userId: string, payload: QuestionsCreate, filename?: string) {
+    const { courseId, task } = payload;
+  
+    const oldcourse = await this.prisma.course.findFirst({
+      where: { id: courseId },
+    });
+  
+    if (!oldcourse) throw new NotFoundException("Course not found");
+  
+    // data obyektini dinamik yig'amiz
+    const dataObj: any = {
+      text: task,
+      userId,
+      courseId,
+      read: false,
+      readAt: new Date(),
+    };
+  
+    if (filename) {
+      dataObj.file = filename;
+    }
+  
+    const data = await this.prisma.question.create({
+      data: dataObj,
+      include: {
+        course: true,
+        user: true,
       },
-      include:{
-        course:true,
-        user:true
-      }
-    })
-
-    if(!data) return {status:false,message:"No created"}
-
-    return data
+    });
+  
+    if (!data) return { status: false, message: "No created" };
+  
+    return data;
   }
+  
 
 
   async updateQuestion(userId: string, payload:UpdateQuestonsStudent, filename?: string) {
@@ -198,34 +203,40 @@ export class QuestionAnswerService {
   }
 
 
-  async createAnswer(userId: string,payload:createAnswerQuestions, filename?: string) {
+async createAnswer(userId: string, payload: createAnswerQuestions, filename?: string) {
+  const { questionId, text } = payload;
 
-    let {questionId,text} = payload
-    let question = await this.prisma.question.findUnique({ where: { id: questionId } });
-    if (!question) throw new NotFoundException("Question not found");
-  
-    let existingAnswer = await this.prisma.questionAnswer.findUnique({
-      where: { questionId },
-    });
-    if (existingAnswer) throw new ConflictException("Answer already exists. Use update instead.");
-  
-    let answer = await this.prisma.questionAnswer.create({
-      data: {
-        userId,
-        questionId,
-        text,
-        file: filename || null,
-      },
-    });
-  
-    await this.prisma.question.update({
-      where: { id: questionId },
-      data: { read: true, updatedAt: new Date() },
-    });
-  
-    return {data:answer};
+  const question = await this.prisma.question.findUnique({ where: { id: questionId } });
+  if (!question) throw new NotFoundException("Question not found");
+
+  const existingAnswer = await this.prisma.questionAnswer.findUnique({
+    where: { questionId },
+  });
+  if (existingAnswer) {
+    throw new ConflictException("Answer already exists. Use update instead.");
   }
-  
+
+  // data objectni dinamik yig'amiz
+  const data: any = {
+    userId,
+    questionId,
+    text,
+  };
+
+  if (filename) {
+    data.file = filename;
+  }
+
+  const answer = await this.prisma.questionAnswer.create({ data });
+
+  await this.prisma.question.update({
+    where: { id: questionId },
+    data: { read: true, updatedAt: new Date() },
+  });
+
+  return { data: answer };
+}
+
   
 
   async updateAnswer(userId: string, answerId: string, payload:updateAnswer, filename?: string) {
