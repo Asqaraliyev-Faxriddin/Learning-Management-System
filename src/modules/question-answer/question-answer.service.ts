@@ -64,7 +64,6 @@ export class QuestionAnswerService {
   
     const wherefilter: any = {
       AND: [
-        { userId },
         ...(course_id ? [{ courseId: course_id }] : []),
         ...(read !== undefined ? [{ read }] : []),
         ...(answered !== undefined 
