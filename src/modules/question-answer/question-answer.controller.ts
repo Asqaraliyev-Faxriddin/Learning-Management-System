@@ -67,12 +67,12 @@ export class QuestionAnswerController {
     @Body() payload: QuestionsCreate,
     @Req() req,
   ) {
-    const filename = file ? file.filename : null;
+    const filename = file?.filename || undefined;  // ✅ xavfsiz usul
   
     return this.questionAnswerService.QuestoinsCreate(
       req.user.id,
       payload,
-      filename!,
+      filename,
     );
   }
   
@@ -121,10 +121,9 @@ export class QuestionAnswerController {
     @Body() payload: createAnswerQuestions,
     @Req() req,
   ) {
-    let filename = file.filename 
+    const filename = file ? file.filename : undefined;
     return this.questionAnswerService.createAnswer(req.user.id, payload, filename);
   }
-
   @Patch("answer/update/:id")
   @Roles(UserRole.ADMIN, UserRole.MENTOR)
   @UseInterceptors(FileInterceptor("file"))
