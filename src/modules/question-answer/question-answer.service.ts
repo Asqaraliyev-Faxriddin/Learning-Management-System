@@ -80,6 +80,8 @@ export class QuestionAnswerService {
       take: limit,
       orderBy: { createdAt: "desc" }
     });
+    console.log("feefef",data);
+    
   
     if (!data || data.length === 0) throw new NotFoundException("Questions not found");
   
