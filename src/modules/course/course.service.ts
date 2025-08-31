@@ -215,7 +215,12 @@ export class CourseService {
     let data = await this.prisma.course.findMany({
       where: wherefilter,
       include:{
-        questions:true,
+        questions:{
+          include:{
+            answer:true,
+            user:true
+          }
+        },
         assignedCourses:true,
         Cursecategory:true,
         lessonBolimlar:true,
