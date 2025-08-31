@@ -115,7 +115,6 @@ export class QuestionAnswerService {
 
   async QuestionsViewOne(question_id:string){
    
-      console.log("errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",question_id);
       
     let olfu = await this.prisma.question.findFirst({
       where:{
@@ -155,7 +154,6 @@ export class QuestionAnswerService {
   
     if (!oldcourse) throw new NotFoundException("Course not found");
   
-    // data obyektini dinamik yig'amiz
     const dataObj: any = {
       text: task,
       userId,
@@ -183,19 +181,28 @@ export class QuestionAnswerService {
   
 
 
-  async updateQuestion(userId: string, payload:UpdateQuestonsStudent, filename?: string) {
-   
-   let {questionId,text} = payload
-    
-    let question = await this.prisma.question.findUnique({ where: { id: questionId } });
+  async updateQuestion(userId: string, payload: UpdateQuestonsStudent, filename?: string) {
+    const { questionId, text } = payload;
+  
+    const question = await this.prisma.question.findUnique({
+      where: { id: questionId },
+    });
+  
     if (!question) throw new NotFoundException("Question not found");
     if (question.userId !== userId) throw new ConflictException("Questions updated no");
   
-    let updated = await this.prisma.question.update({
+    if (filename && question.file) {
+      const oldFilePath = path.join(process.cwd(), "uploads", "questions", question.file);
+      if (fs.existsSync(oldFilePath)) {
+        fs.unlinkSync(oldFilePath); 
+      }
+    }
+  
+    const updated = await this.prisma.question.update({
       where: { id: questionId },
       data: {
-        text:text || question.text,
-        file:filename || question.file
+        text: text || question.text,
+        file: filename || question.file,
       },
       include: {
         user: true,
@@ -203,7 +210,7 @@ export class QuestionAnswerService {
       },
     });
   
-    return {data:updated};
+    return { data: updated };
   }
 
 
@@ -243,59 +250,84 @@ async createAnswer(userId: string, payload: createAnswerQuestions, filename?: st
 
   
 
-  async updateAnswer(userId: string, answerId: string, payload:updateAnswer, filename?: string) {
+    async updateAnswer(
+      userId: string,
+      answerId: string,
+      payload: updateAnswer,
+      filename?: string
+    ) {
+      const { text } = payload;
     
-    let {text} = payload
+      const answer = await this.prisma.questionAnswer.findUnique({
+        where: { id: answerId },
+      });
+      if (!answer) throw new NotFoundException("Answer not found");
     
-    let answer = await this.prisma.questionAnswer.findUnique({ where: { id: answerId } });
-    if (!answer) throw new NotFoundException("Answer not found");
-  
-    if (filename) {
-
-  
-      let oldPath = path.join(process.cwd(),"uploads","banner",answer.file!);
-      if (fs.existsSync(oldPath)) {
-        fs.unlinkSync(oldPath);
+      if (filename && answer.file) {
+        const oldPath = path.join(process.cwd(), "uploads", "answers", answer.file);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
       }
-      
+    
+      const updated = await this.prisma.questionAnswer.update({
+        where: { id: answerId },
+        data: {
+          text: text ?? answer.text,         
+          file: filename ?? answer.file,    
+        },
+      });
+    
+      return updated;
     }
-  
-    let updated = await this.prisma.questionAnswer.update({
-      where: { id: answerId },
-      data: {
-        text:text || answer.text,
-        file:filename || answer.file
-      },
+
+
+  async deleteAnswer(userId:string,answerId: string) {
+    const question = await this.prisma.question.findUnique({
+      where: { id:answerId },
     });
   
-    return updated;
-  }
+    if (!question) throw new NotFoundException("Answer not found");
   
-
-  async deleteAnswer(answerId: string) {
-    let answer = await this.prisma.questionAnswer.findUnique({ where: { id: answerId } });
-    if (!answer) throw new NotFoundException("Answer not found");
+    if (question.userId !== userId) {
+      throw new ConflictException("No deleted questions");
+    }
   
-    await this.prisma.questionAnswer.delete({ where: { id: answerId } });
+    if (question.file) {
+      const filePath = path.join(process.cwd(), "uploads", "answers", question.file);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
   
+    await this.prisma.question.delete({ where: { id:answerId } });
   
     return { status: true, message: "Answer deleted" };
   }
   
 
   async deleteQuestion(userId: string, questionId: string) {
-    let question = await this.prisma.question.findUnique({ where: { id: questionId } });
-    
-    if (!question) throw new NotFoundException("Question not found");
-    
-    if (question.userId !== userId) throw new ConflictException("No deleted questions");
+    const question = await this.prisma.question.findUnique({
+      where: { id: questionId },
+    });
   
-
+    if (!question) throw new NotFoundException("Question not found");
+  
+    if (question.userId !== userId) {
+      throw new ConflictException("No deleted questions");
+    }
+  
+    if (question.file) {
+      const filePath = path.join(process.cwd(), "uploads", "questions", question.file);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+  
     await this.prisma.question.delete({ where: { id: questionId } });
   
     return { status: true, message: "Question deleted" };
   }
-  
 
 
 }
