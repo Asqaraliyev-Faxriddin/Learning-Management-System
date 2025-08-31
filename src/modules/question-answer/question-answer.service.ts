@@ -55,40 +55,41 @@ export class QuestionAnswerService {
 
   async QuestionsAllMineCourse(userId: string, payload: QuestionsMine) {
     let { course_id, answered, read, limit = 10, offset = 1 } = payload;
-
   
-    console.log("efffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",course_id);
-    
-
-
     if (read === "true") read = true;
     else if (read === "false") read = false;
-    
+  
     if (answered === "true") answered = true;
     else if (answered === "false") answered = false;
-
-    const filter: any[] = [{ userId }];
   
-    if (course_id) filter.push({ courseId: course_id });
-    if (answered !== undefined) filter.push({ answered });
-    if (read !== undefined) filter.push({ read });
-  
-    const wherefilter: any = filter.length ? { AND: filter } : {};
+    const wherefilter: any = {
+      AND: [
+        { userId },
+        ...(course_id ? [{ courseId: course_id }] : []),
+        ...(read !== undefined ? [{ read }] : []),
+        ...(answered !== undefined 
+          ? answered 
+            ? [{ answer: { isNot: null } }]
+            : [{ answer: null }]
+          : []
+        ),
+      ]
+    };
   
     const data = await this.prisma.question.findMany({
       where: wherefilter,
       include: { course: true, user: true },
       skip: (offset - 1) * limit,
       take: limit,
-      orderBy: { createdAt: "desc" }
+      orderBy: { createdAt: "desc" },
     });
-
-    
   
-    if (!data || data.length === 0) throw new NotFoundException("Questions not found");
+    if (!data || data.length === 0)
+      throw new NotFoundException("Questions not found");
   
     return data;
   }
+  
   
 
 
