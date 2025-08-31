@@ -283,7 +283,7 @@ async createAnswer(userId: string, payload: createAnswerQuestions, filename?: st
 
 
   async deleteAnswer(userId:string,answerId: string) {
-    const question = await this.prisma.question.findUnique({
+    const question = await this.prisma.questionAnswer.findUnique({
       where: { id:answerId },
     });
   
@@ -300,7 +300,7 @@ async createAnswer(userId: string, payload: createAnswerQuestions, filename?: st
       }
     }
   
-    await this.prisma.question.delete({ where: { id:answerId } });
+    await this.prisma.questionAnswer.delete({ where: { id:answerId } });
   
     return { status: true, message: "Answer deleted" };
   }
