@@ -69,9 +69,9 @@ export class PurchasedCoursesController {
     return await this.purchasedCoursesService.deletePurchasedCourse(id);
   }
 
-  // @Cron('0 0 * * *') 
-  // async handlePurchaseCheck() {
-  //   console.log('Har 24 soatda purchase tekshirilmoqda...');
-  //   await this.purchasedCoursesService.removeExpiredPurchases()
-  // }
+  @Cron('0 0 * * *') 
+  async handlePurchaseCheck() {
+    console.log('Har 24 soatda purchase tekshirilmoqda...');
+    await this.purchasedCoursesService.removeExpiredPurchases()
+  }
 }
