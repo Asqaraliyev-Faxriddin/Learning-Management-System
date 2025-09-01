@@ -4,8 +4,9 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { PurchasedCourseService } from './purchased-course.service';
 
 import { Roles } from 'src/common/decorators/Roles.decorator';
+import { Cron } from '@nestjs/schedule';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get,Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { PurchasedCourseAllDto, PurchasedCoursePaymentDto, PurchasedOneDto } from './dto/create-purchased-course.dto';
 
 @ApiTags('Purchased Courses')
@@ -18,7 +19,7 @@ export class PurchasedCoursesController {
   ) {}
 
   @Post('purchase')
-  @Roles(UserRole.STUDENT)
+  @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'STUDENT ' })
   @ApiBody({ type: PurchasedCoursePaymentDto })
   @ApiResponse({ status: 201, description: 'Course successfully purchased' })
@@ -66,5 +67,11 @@ export class PurchasedCoursesController {
   @ApiResponse({ status: 200, description: 'Purchased course deleted' })
   async deletePurchasedCourse(@Param('id') id: string) {
     return await this.purchasedCoursesService.deletePurchasedCourse(id);
+  }
+
+  @Cron('0 0 * * *') 
+  async handlePurchaseCheck() {
+    console.log('Har 24 soatda purchase tekshirilmoqda...');
+    await this.purchasedCoursesService.removeExpiredPurchases()
   }
 }

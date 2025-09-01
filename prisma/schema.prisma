@@ -137,7 +137,7 @@ model PurchasedCourse {
   amount      Decimal?
   paidVia     PaidVia
   purchasedAt DateTime @default(now())
-
+ createdAt DateTime @default(now())
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
   user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
 

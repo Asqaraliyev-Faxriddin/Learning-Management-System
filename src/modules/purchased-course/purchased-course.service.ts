@@ -2,6 +2,7 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { PrismaService } from 'src/core/prisma/prisma.service';
 import { PurchasedCourseAllDto, PurchasedCoursePaymentDto, PurchasedOneDto } from './dto/create-purchased-course.dto';
 import { PaidVia } from '@prisma/client';
+import { addMonths } from 'date-fns';
 
 @Injectable()
 export class PurchasedCourseService {
@@ -207,6 +208,43 @@ export class PurchasedCourseService {
 
       return {data:oldPurchaseCourse}
   
+    }
+
+
+    async removeExpiredPurchases() {
+      // Bugungi sanadan 1 oy oldingi vaqtni hisoblaymiz
+      const oneMonthAgo = addMonths(new Date(), -1);
+    
+      // 1 oydan oshgan purchasedCourse yozuvlarini topamiz
+      const expiredPurchases = await this.prisma.purchasedCourse.findMany({
+        where: {
+          createdAt: {
+            lt: oneMonthAgo, // createdAt < (1 oy oldingi sana)
+          },
+        },
+        include: {
+          user: true,
+          course: true,
+        },
+      });
+    
+      if (expiredPurchases.length === 0) {
+        return { status: true, message: 'Eskirgan purchase topilmadi', deleted: 0 };
+      }
+    
+      // Hammasini ketma-ket o‘chiramiz
+      for (const purchase of expiredPurchases) {
+        await this.prisma.purchasedCourse.delete({
+          where: { id: purchase.id },
+        });
+      }
+    
+      return {
+        status: true,
+        message: 'Eskirgan purchase yozuvlari o‘chirildi',
+        deleted: expiredPurchases.length,
+        data: expiredPurchases,
+      };
     }
 
   

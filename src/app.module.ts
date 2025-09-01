@@ -19,10 +19,12 @@ import { VerificationModule } from './modules/verification/verification.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
 
+    ScheduleModule.forRoot(),
     ServeStaticModule.forRoot(
     {
       rootPath: join(process.cwd(), 'uploads/banner'), 
