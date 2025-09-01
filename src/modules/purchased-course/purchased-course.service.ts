@@ -2,7 +2,7 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { PrismaService } from 'src/core/prisma/prisma.service';
 import { PurchasedCourseAllDto, PurchasedCoursePaymentDto, PurchasedOneDto } from './dto/create-purchased-course.dto';
 import { PaidVia } from '@prisma/client';
-import { addMonths } from 'date-fns';
+import { addMonths,subMinutes } from 'date-fns';
 
 @Injectable()
 export class PurchasedCourseService {
@@ -177,7 +177,7 @@ export class PurchasedCourseService {
       userId:olduser.id,
       courseId:oldcourse.id,
       amount:oldcourse.price,
-      paidVia:PaidVia.CASH
+      paidVia:PaidVia.CASH,
 
     },
     include:{
@@ -214,6 +214,7 @@ export class PurchasedCourseService {
     async removeExpiredPurchases() {
       // Bugungi sanadan 1 oy oldingi vaqtni hisoblaymiz
       const oneMonthAgo = addMonths(new Date(), -1);
+      
     
       // 1 oydan oshgan purchasedCourse yozuvlarini topamiz
       const expiredPurchases = await this.prisma.purchasedCourse.findMany({
