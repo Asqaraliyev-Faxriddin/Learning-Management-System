@@ -24,7 +24,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
 
-    ScheduleModule.forRoot(),
+    // ScheduleModule.forRoot(),
     ServeStaticModule.forRoot(
     {
       rootPath: join(process.cwd(), 'uploads/banner'), 
