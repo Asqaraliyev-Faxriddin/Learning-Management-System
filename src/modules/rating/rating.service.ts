@@ -155,5 +155,48 @@ export class RatingService {
     return data
   }
 
+  async MentorRatingsCourse(mentorId: string) {
+   
+    const mentor = await this.prisma.users.findFirst({
+      where: { id: mentorId },
+    });
+  
+    if (!mentor) throw new NotFoundException("Mentor not found");
+  
+    
+    const courses = await this.prisma.course.findMany({
+      where: { mentorId },
+    });
+  
+    if (courses.length === 0) {
+      return [];
+    }
+  
+
+    const result = await Promise.all(
+      courses.map(async (course) => {
+        const ratings = await this.prisma.rating.findMany({
+          where: { courseId: course.id },
+        });
+  
+        const total = ratings.length;
+        const avg =
+          total > 0
+            ? ratings.reduce((sum, r) => sum + r.rate, 0) / total
+            : 0;
+  
+        return {
+          courseId: course.id,
+          courseName: course.name,
+          total,
+          avg,
+        };
+      })
+    );
+  
+    return result;
+  }
+  
+
   
 }

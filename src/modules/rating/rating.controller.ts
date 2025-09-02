@@ -76,4 +76,21 @@ export class RatingController {
   async remove(@Param("id", ParseUUIDPipe) id: string) {
     return this.ratingService.remove(id);
   }
+  
+
+  
+  @Roles(UserRole.ADMIN,UserRole.MENTOR,UserRole.ASSISTANT)
+  @Get("/mentors/course/:mentorId")
+  @ApiOperation({ summary: "Mentorni Kursini reyting analitikasi" })
+  @ApiResponse({
+    status: 200,
+    description: "O'rtacha baho, umumiy reytinglar va taqsimot",
+  })
+  async mentorOldCourse(@Param("mentorId", ParseUUIDPipe) courseId: string) {
+    return this.ratingService.MentorRatingsCourse(courseId)
+    }
+
+
+
+
 }

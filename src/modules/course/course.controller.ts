@@ -178,14 +178,14 @@ export class CourseController {
   }
 
   @Patch("publish/:id")
-  @Roles(UserRole.ADMIN,UserRole.MENTOR)
+  @Roles(UserRole.ADMIN,)
   @ApiOperation({ summary: "Course ni publish qilish Admin Mentor " })
   coursePublish(@Param("id") id: string) {
     return this.courseService.CoursePublish(id);
   }
 
   @Patch("unpublish/:id")
-  @Roles(UserRole.ADMIN,UserRole.MENTOR)
+  @Roles(UserRole.ADMIN,)
   @ApiOperation({ summary: "Course ni unpublish qilish Admin Mentor" })
   courseUnPublish(@Param("id") id: string) {
     return this.courseService.CourseunPublish(id);
