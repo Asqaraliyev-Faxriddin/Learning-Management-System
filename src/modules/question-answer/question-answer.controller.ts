@@ -232,4 +232,12 @@ export class QuestionAnswerController {
   async deleteQuestion(@Param("id") questionId: string, @Req() req) {
     return this.questionAnswerService.deleteQuestion(req.user.id, questionId);
   }
+
+
+  @Get("mentor/notification/:mentorId")
+  @Roles(UserRole.ADMIN, UserRole.MENTOR,UserRole.ASSISTANT)
+  @ApiOperation({ summary: "Notificationlar sonni" })
+  async MentorNotification(@Param("mentorId") answerId: string,@Req() req) {
+    return this.questionAnswerService.MentorCourseNotificationCount(answerId)
+  }
 }

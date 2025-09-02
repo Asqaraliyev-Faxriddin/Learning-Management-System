@@ -330,4 +330,37 @@ async createAnswer(userId: string, payload: createAnswerQuestions, filename?: st
   }
 
 
+  async MentorCourseNotificationCount(mentorId: string) {
+    // 1️⃣ Mentor mavjudligini tekshirish
+    const mentor = await this.prisma.users.findFirst({
+      where: { id: mentorId },
+    });
+    if (!mentor) throw new NotFoundException("Mentor not found");
+  
+    // 2️⃣ Mentorning barcha kurslarini olish
+    const courses = await this.prisma.course.findMany({
+      where: { mentorId },
+      select: { id: true },
+    });
+  
+    if (courses.length === 0) return { count: 0 };
+  
+    // 3️⃣ Har bir kurs bo‘yicha read=false bo‘lgan question-answer sonini olish
+    let totalUnread = 0;
+  
+    for (const course of courses) {
+      const count = await this.prisma.question.count({
+        where: {
+          courseId  : course.id,
+          read: false,
+        },
+      });
+      totalUnread += count;
+    }
+  
+    return { count: totalUnread };
+  }
+  
+
+
 }
