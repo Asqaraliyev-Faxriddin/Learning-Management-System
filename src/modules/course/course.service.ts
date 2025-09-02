@@ -210,19 +210,26 @@ export class CourseService {
     let data = await this.prisma.course.findMany({
       where: wherefilter,
       include: {
+        purchasedCourses: true,
         questions: { include: { answer: true, user: true } },
         assignedCourses: true,
         Cursecategory: true,
         lessonBolimlar: true,
         lastActivities: true,
         lessons: true,
-        purchasedCourses: true,
         ratings: true,
         mentor: true
       },
       take: limit,
       skip: (offset - 1) * limit
     });
+    
+    // purchasedCount qo‘shamiz
+    data = data.map(course => ({
+      ...course,
+      purchasedCount: course.purchasedCourses.length
+    }));
+    
   
     // 2) Jami kurslar sonini hisoblash
     let total = await this.prisma.course.count({
