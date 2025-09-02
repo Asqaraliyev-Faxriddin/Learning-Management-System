@@ -136,56 +136,50 @@ export class CourseService {
 
   
 
-  async CoursefullAll(payload:CourseAllDto){
-
-    let {offset=1,limit=10,search,level,category_id,mentor_id,price_min,price_max} = payload
+  async CoursefullAll(payload: CourseAllDto) {
+    let {
+      offset = 1,
+      limit = 10,
+      search,
+      level,
+      category_id,
+      mentor_id,
+      price_min,
+      price_max
+    } = payload;
   
-    if(mentor_id){
-      let oldmentor = await this.prisma.users.findFirst({
-        where:{id:mentor_id}
-      })
-
-      if(!oldmentor) throw new NotFoundException("Mentor not found")
+    if (mentor_id) {
+      let oldmentor = await this.prisma.users.findFirst({ where: { id: mentor_id } });
+      if (!oldmentor) throw new NotFoundException("Mentor not found");
     }
-
-    if(category_id){
-      let oldmentor = await this.prisma.courseCategory.findFirst({
-        where:{id:category_id}
-      })
-
-      if(!oldmentor) throw new NotFoundException("Category not found")
+  
+    if (category_id) {
+      let oldcategory = await this.prisma.courseCategory.findFirst({ where: { id: category_id } });
+      if (!oldcategory) throw new NotFoundException("Category not found");
     }
-
-
-    let filter:any = []
-
-    if(search){
+  
+    let filter: any = [];
+  
+    if (search) {
       filter.push({
-        Cursecategory:{
-          name:search
+        Cursecategory: {
+          name: search
         }
-      })
+      });
     }
-
-    if(level){
-      filter.push({
-        level:level
-      })
+  
+    if (level) {
+      filter.push({ level });
     }
-
-    if(category_id){
-      filter.push({
-        cursecategoryId:category_id
-      })
+  
+    if (category_id) {
+      filter.push({ cursecategoryId: category_id });
     }
-
-
-    if(mentor_id){
-      filter.push({
-        mentorId: mentor_id
-      })
+  
+    if (mentor_id) {
+      filter.push({ mentorId: mentor_id });
     }
-
+  
     if (price_min && price_max) {
       filter.push({
         price: {
@@ -206,40 +200,43 @@ export class CourseService {
         }
       });
     }
-    let wherefilter:any = {}
-    if(filter.length){
-      wherefilter.OR = filter
+  
+    let wherefilter: any = {};
+    if (filter.length) {
+      wherefilter.OR = filter;
     }
-
-    
+  
+    // 1) Ma'lumotlarni limit va offset bilan olish
     let data = await this.prisma.course.findMany({
       where: wherefilter,
-      include:{
-        questions:{
-          include:{
-            answer:true,
-            user:true
-          }
-        },
-        assignedCourses:true,
-        Cursecategory:true,
-        lessonBolimlar:true,
-        lastActivities:true,
-        lessons:true,
-        purchasedCourses:true,
-        ratings:true,
-        mentor:true
+      include: {
+        questions: { include: { answer: true, user: true } },
+        assignedCourses: true,
+        Cursecategory: true,
+        lessonBolimlar: true,
+        lastActivities: true,
+        lessons: true,
+        purchasedCourses: true,
+        ratings: true,
+        mentor: true
       },
       take: limit,
       skip: (offset - 1) * limit
-    })
-
-  return{
-    succase:true,
-    message:"Succase courses all",
-     data}
+    });
   
+    // 2) Jami kurslar sonini hisoblash
+    let total = await this.prisma.course.count({
+      where: wherefilter
+    });
+  
+    return {
+      succase: true,
+      message: "Succase courses all",
+      total, // <-- shu yerda jami soni qaytadi
+      data
+    };
   }
+  
 
   async myCourse(userId:string,id:string){
 
