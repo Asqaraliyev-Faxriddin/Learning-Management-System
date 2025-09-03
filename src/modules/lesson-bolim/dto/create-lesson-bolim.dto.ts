@@ -28,12 +28,6 @@ export class LessonBolimAllDto {
   @Type(() => Boolean)
   include_lesson: boolean;
 
-  @ApiProperty({
-    example: "0f6d30d1-38e2-43e9-97dd-746327ea9e7d",
-    description: "Course ID (UUID formatda)",
-  })
-  @IsUUID()
-  course_id: string;
 }
 
 

@@ -8,8 +8,8 @@ import { assert } from 'console';
 export class LessonBolimService {
   constructor(private prisma:PrismaService){}
 
-  async lessonbolimAdmin(id:string,payload:LessonBolimAllDto){
-    let {offset=1,limit=10,include_lesson,course_id} = payload
+  async lessonbolimAdmin(id:string,payload:LessonBolimAllDto,course_id:string){
+    let {offset=1,limit=10,include_lesson} = payload
 
     let oldCourse = await this.prisma.course.findFirst({where:{id:course_id}})
     if(!oldCourse) throw new NotFoundException("Course not found")
@@ -38,8 +38,8 @@ export class LessonBolimService {
 
 
 
-  async lessonbolimUser(id:string,payload:LessonBolimAllDto){
-    let {offset=1,limit=10,include_lesson,course_id} = payload
+  async lessonbolimUser(id:string,payload:LessonBolimAllDto,course_id:string){
+    let {offset=1,limit=10,include_lesson,} = payload
 
     let oldCourse = await this.prisma.course.findFirst({where:{id:course_id}})
     if(!oldCourse) throw new NotFoundException("Course not found")

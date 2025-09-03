@@ -21,8 +21,7 @@ export class LessonBolimController {
   @ApiQuery({ name: "limit", required: false, type: Number, example: 10 })
   @ApiQuery({ name: "include_lesson", required: false, type: Boolean, example: true })
   async getAllAdmin(@Param("course_id") courseId: string,@Query() query: LessonBolimAllDto,@Req() req) {
-    return this.lessonBolimService.lessonbolimAdmin(req.user.id,{ ...query, course_id: courseId },
-    );
+    return this.lessonBolimService.lessonbolimAdmin(req.user.id,{ ...query, },courseId  );
   }
 
 @Roles(UserRole.ADMIN, UserRole.MENTOR)
@@ -50,7 +49,8 @@ async createLessonBolim(
   ) {
     return this.lessonBolimService.lessonbolimUser(
       (query as any).user?.id,
-      { ...query, course_id: courseId },
+      { ...query, },
+      courseId
     );
   }
 
