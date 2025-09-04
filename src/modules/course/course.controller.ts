@@ -124,7 +124,7 @@ export class CourseController {
     return this.courseService.createCourse(req["user"].id, payload, bannerFilename!, introFilename!);
   }
 
-  @Patch("update-mentor")
+  @Patch("update-course")
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -138,7 +138,8 @@ export class CourseController {
             else if (file.fieldname === 'introvideo') cb(null, './uploads/Introvideo');
           },
           filename: (req, file, cb) => {
-            const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1e9) + '-' + file.originalname;
+            const uniqueName =
+              Date.now() + '-' + Math.round(Math.random() * 1e9) + '-' + file.originalname;
             cb(null, uniqueName);
           },
         }),
@@ -171,11 +172,17 @@ export class CourseController {
     },
     @Body() payload: UpdateCourseDto
   ) {
-    const bannerFilename = files.banner?.[0]?.filename || null;
-    const introFilename = files.introvideo?.[0]?.filename || null;
-
-    return this.courseService.updateMentorCourse(courseId, payload, bannerFilename!, introFilename!);
+    const bannerFilename = files?.banner?.[0]?.filename || undefined;
+    const introFilename = files?.introvideo?.[0]?.filename || undefined;
+  
+    return this.courseService.updateMentorCourse(
+      courseId,
+      payload,
+      bannerFilename,
+      introFilename,
+    );
   }
+  
 
   @Patch("publish/:id")
   @Roles(UserRole.ADMIN,)

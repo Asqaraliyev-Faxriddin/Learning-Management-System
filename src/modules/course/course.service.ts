@@ -673,62 +673,71 @@ export class CourseService {
   }
 
 
-  async updateMentorCourse(courseId: string, payload: UpdateCourseDto, banner_url:string,intro_url:string) {
+  async updateMentorCourse(
+    courseId: string,
+    payload: UpdateCourseDto,
+    banner_url?: string,
+    intro_url?: string
+  ) {
     let course = await this.prisma.course.findFirst({
       where: { id: courseId },
     });
   
     let courseCategory = await this.prisma.courseCategory.findFirst({
-      where:{
-        id:payload.cursecategoryId
-      }
-    })
-
-
-    if(!courseCategory) throw new NotFoundException("Category not found ")
+      where: {
+        id: payload.cursecategoryId,
+      },
+    });
+  
+    if (!courseCategory) throw new NotFoundException("Category not found");
     if (!course) throw new NotFoundException("Course not found");
   
     let introVideo = course.introVideo;
-    let banner = course.banner
+    let banner = course.banner;
   
+    // ✅ Intro video yangilanishi
     if (intro_url) {
-
-      introVideo = intro_url
+      introVideo = intro_url;
   
-      let oldPathintro = path.join(process.cwd(),"uploads","Introvideo", course.introVideo!);
-      if (fs.existsSync(oldPathintro)) {
-        fs.unlinkSync(oldPathintro);
+      if (course.introVideo) {
+        let oldPathintro = path.join(
+          process.cwd(),
+          "uploads",
+          "Introvideo",
+          course.introVideo
+        );
+        if (fs.existsSync(oldPathintro)) {
+          fs.unlinkSync(oldPathintro);
+        }
       }
-      
-
     }
-
-    
-    if (banner) {
-
-      banner = banner_url
   
-      let oldPath = path.join(process.cwd(),"uploads","banner",course.banner!);
-      if (fs.existsSync(oldPath)) {
-        fs.unlinkSync(oldPath);
+    // ✅ Banner yangilanishi
+    if (banner_url) {
+      banner = banner_url;
+  
+      if (course.banner) {
+        let oldPath = path.join(process.cwd(), "uploads", "banner", course.banner);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
       }
-      
     }
+  
     let updated = await this.prisma.course.update({
       where: { id: courseId },
       data: {
         ...payload,
         introVideo,
-        banner
-      }
+        banner,
+      },
     });
   
     return {
       message: "Course updated successfully",
-      
-      data: updated
+      data: updated,
     };
   }
-
+  
 
 }
