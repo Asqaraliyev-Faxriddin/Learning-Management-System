@@ -333,6 +333,8 @@ model Contact {
   id        String   @id @default(uuid())
   fullName  String
   phone     String
+  ip String? 
+
   message   String
   createdAt DateTime @default(now())
 }
